@@ -276,13 +276,31 @@ public class Database {
 						rs.getString("ABTEILUNG"), rs.getString("USERNAME"),
 						Integer.valueOf(rs.getString("LASTCHANGE"))));
 
-			}
-			;
+			}	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		return msgs;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ArrayList<User> loadUser(){
+		ArrayList<User> users = new ArrayList<User>();
+		try {
+			String query = "Select * from LOGIN;";
+			PreparedStatement output = conn.prepareStatement(query);
+			ResultSet rs = output.executeQuery();
+			while (rs.next()) {
+				users.add(new User(rs.getString("USERNAME"), null , Integer.valueOf(rs.getString("BERECHTIGUNG")),  Integer.valueOf(rs.getString("ID"))));
+			}	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return users;
 	}
 
 	private int getID(String table) {

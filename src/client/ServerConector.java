@@ -20,10 +20,20 @@ public class ServerConector {
 	private int serverPort;
 	private InetAddress serverIP;
 
+	public boolean ereichbar = false;
+	
 	private Socket socket;
 
 	private BufferedReader in;
 	private PrintWriter out;
+
+	public int getServerPort() {
+		return serverPort;
+	}
+
+	public InetAddress getServerIP() {
+		return serverIP;
+	}
 
 	/**
 	 * 
@@ -34,7 +44,10 @@ public class ServerConector {
 	public ServerConector(String serverIP, int serverPort) throws UnknownHostException {
 
 		this.serverIP = InetAddress.getByName(serverIP);
+		
 		this.serverPort = serverPort;
+		
+		this.ereichbar = true;
 
 	}
 

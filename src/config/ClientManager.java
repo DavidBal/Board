@@ -35,11 +35,16 @@ public class ClientManager {
 	 */
 	public ServerConector server;
 	
+	/**
+	 * User Daten des angemeldet Nutzers
+	 */
 	public User user;
 
+	
 	Thread update;
 
 	public ArrayList<Message> Messages;
+	
 	public Buffer buffer;
 
 	/**

@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Scanner;
 
@@ -27,7 +28,7 @@ public class CommandsExcuter extends Thread {
 	private EnumSet<Commands> usable;
 
 	private enum Commands {
-		help("Shows All Commnads"), show("Show a List of Connections"), fail("fail passing"), add("add a user");
+		help("Shows All Commnads"), show("Show a List of Connections"), fail("fail passing"), add("add a user"), listuser("Shows a list of all Users");
 
 		String info;
 
@@ -48,7 +49,7 @@ public class CommandsExcuter extends Thread {
 		this.manager = manager;
 		this.server = server;
 		this.reader = new Scanner(System.in);
-		usable = EnumSet.of(Commands.help, Commands.show,Commands.add);
+		usable = EnumSet.of(Commands.help, Commands.show,Commands.add,Commands.listuser);
 		this.setName("ServerCommandExecuter");
 	}
 
@@ -93,6 +94,13 @@ public class CommandsExcuter extends Thread {
 			int berechtigung = Integer.valueOf(scanner.nextLine());
 			User user = new User(name, pw, berechtigung);
 			manager.database.addUser(user);
+			break;
+		case listuser:
+			println("UserList:");
+			ArrayList<User> users = manager.database.loadUser();
+			for(User u : users){
+				println(u.toString());
+			}
 			break;
 		default:
 			println("Use Command: " + Commands.help + " - " + Commands.help.info);

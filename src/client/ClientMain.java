@@ -47,6 +47,8 @@ public class ClientMain extends Thread {
 				manager.server.ping();
 				manager.server.sendNewMessage(new Message(-1, "Hallo Welt!!", "Unknown", "Unknown", 1));
 			} catch (IOException e) {
+				
+				
 				e.printStackTrace();
 			}
 
