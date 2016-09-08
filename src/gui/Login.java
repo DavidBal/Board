@@ -115,29 +115,35 @@ public class Login extends JFrame {
 					this.login.setVisible(false);
 
 					// TODO Start to Build Main interface
+
+					MainFrame mainFrame = new MainFrame(this.manager);
+					mainFrame.setVisible(true);
+					this.manager.setMainFrame(mainFrame);
+
 				}
 			} else {
-				JOptionPane.showMessageDialog(login.getContentPane(), "Login nicht möglich: " + "Benutzername oder Passwort sind Leer ", "Login Failed",
+				JOptionPane.showMessageDialog(login.getContentPane(),
+						"Login nicht möglich: " + "Benutzername oder Passwort sind Leer ", "Login Failed",
 						JOptionPane.ERROR_MESSAGE);
 			}
-				
-				
+
 		}
 	}
-	
-	private class ChangeServerButtonEvent extends MouseAdapter{
+
+	private class ChangeServerButtonEvent extends MouseAdapter {
 		ClientManager manager;
 		JLabel serverInfo;
-		public ChangeServerButtonEvent(ClientManager manager,JLabel serverInfo2){
+
+		public ChangeServerButtonEvent(ClientManager manager, JLabel serverInfo2) {
 			this.manager = manager;
 			this.serverInfo = serverInfo2;
 		}
-		
+
 		public void mouseClicked(MouseEvent e) {
 			ChangeServer changeServer = new ChangeServer(this.manager, this.serverInfo);
 			changeServer.setVisible(true);
 		}
-		
+
 	}
 
 }

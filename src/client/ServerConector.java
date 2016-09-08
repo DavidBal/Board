@@ -137,7 +137,7 @@ public class ServerConector {
 	public void update(ClientManager manager) throws IOException {
 		this.connect();
 
-		manager.Messages.clear(); // TODO Besser
+		manager.deleteAllMessage(); // TODO Besser
 
 		this.out.println(dataOrga.ControllCalls.UPDATE);
 
@@ -147,7 +147,7 @@ public class ServerConector {
 			input = in.readLine();
 
 			while (!input.equals(dataOrga.ControllCalls.END.toString())) {
-				manager.Messages.add(Message.stringToMessage(input));
+				manager.addMessage(Message.stringToMessage(input));
 				input = in.readLine();
 			}
 		} catch (IOException e) {

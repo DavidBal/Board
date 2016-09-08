@@ -165,7 +165,7 @@ public class Konsole {
 			break;
 		case 8:
 			System.out.println("Messages: ");
-			for (Message s : manager.Messages) {
+			for (Message s : manager.getMessages()) {
 				System.out.println(s.toString().replace(Message.split, "\n"));
 			}
 			break;
@@ -193,7 +193,7 @@ public class Konsole {
 			int delete = 0;
 			System.out.println("Delete Msg Id? :");
 			String id = leser.nextLine();
-			for (Message message : manager.Messages){
+			for (Message message : manager.getMessages()){
 				if(message.getId() == Integer.valueOf(id)){
 					try {
 						if(manager.server.deleteMessage(message) == true){

@@ -12,11 +12,12 @@ import client.Buffer;
 import client.ServerConector;
 import dataOrga.Message;
 import dataOrga.User;
+import gui.MainFrame;
 import update.UpdaterThread;
+
 /**
  * 
- * @author davidbaldauf
- *	Speichert Wichtige Daten für den Client. 
+ * @author davidbaldauf Speichert Wichtige Daten für den Client.
  */
 public class ClientManager {
 
@@ -34,17 +35,44 @@ public class ClientManager {
 	 * Server der momentan angesprochen wird
 	 */
 	public ServerConector server;
-	
+
 	/**
 	 * User Daten des angemeldet Nutzers
 	 */
 	public User user;
 
-	
 	Thread update;
 
-	public ArrayList<Message> Messages;
-	
+	private MainFrame mf;
+
+	public MainFrame getMainFrame() {
+		return this.mf;
+	}
+
+	public void setMainFrame(MainFrame mf) {
+		this.mf = mf;
+	}
+
+	private ArrayList<Message> Messages;
+
+	public ArrayList<Message> getMessages() {
+		return this.Messages;
+	}
+
+	public void addMessage(Message msg) {
+		this.Messages.add(msg);
+		if (this.mf != null) {
+			mf.addMessage(msg);
+		}
+	}
+
+	public void deleteAllMessage(){
+		this.Messages.clear();
+		if(this.mf != null){
+			mf.removeAllMessagePanel();
+		}
+	}
+
 	public Buffer buffer;
 
 	/**
@@ -54,8 +82,8 @@ public class ClientManager {
 		this.readInServer();
 		this.buffer = new Buffer(this);
 		this.Messages = new ArrayList<Message>();
+		this.mf = null;
 	}
-	
 
 	/**
 	 * Liest die Datei ein ServerList.txt ein und Added Server die noch nicht da
@@ -83,7 +111,8 @@ public class ClientManager {
 
 					ServerConector newServer = new ServerConector(serverIP, serverPort, name);
 
-					// Ueberpruefung ob der Server schon vorhanden ist um Dopplung
+					// Ueberpruefung ob der Server schon vorhanden ist um
+					// Dopplung
 					// zu verhindern.
 					if (!knownServer.contains(newServer)) {
 						knownServer.add(newServer);
@@ -152,8 +181,7 @@ public class ClientManager {
 	public void changeMainServer(ServerConector server) {
 		this.server = server;
 	}
-	
-	
+
 	/**
 	 * Startet den UpdaterThread
 	 */
@@ -176,7 +204,7 @@ public class ClientManager {
 	 */
 	public void exitUpdater() {
 		synchronized (this.update) {
-			((UpdaterThread)this.update).exit = true;
+			((UpdaterThread) this.update).exit = true;
 			this.update.notify();
 		}
 	}

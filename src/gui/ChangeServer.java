@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import client.ServerConector;
@@ -47,7 +46,7 @@ public class ChangeServer extends JFrame {
 
 		JPanel portZone = new JPanel();
 		portZone.add(new JLabel("Port"));
-		this.port = new JTextField(Integer.toString(manager.server.getServerPort()) , 15);
+		this.port = new JTextField(Integer.toString(manager.server.getServerPort()), 15);
 		portZone.add(this.port);
 		this.add(portZone, BorderLayout.CENTER);
 
@@ -76,7 +75,7 @@ public class ChangeServer extends JFrame {
 						Integer.valueOf(this.changeServer.port.getText()));
 
 				changeServer.setVisible(false);
-				
+
 				changeServer.serverInfo.setText(manager.server.toString());
 
 			} catch (UnknownHostException ex) {
