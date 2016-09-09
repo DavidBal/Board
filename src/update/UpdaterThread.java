@@ -2,6 +2,8 @@ package update;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import config.ClientManager;
 import dataOrga.ControllCalls;
 import dataOrga.Message;
@@ -23,7 +25,9 @@ public class UpdaterThread extends Thread {
 	 */
 	@Override
 	public void run() {
+
 		update();
+
 		this.exit = false;
 	}
 
@@ -39,15 +43,22 @@ public class UpdaterThread extends Thread {
 	}
 
 	/**
+	 * @throws IOException
 	 * 
 	 */
 	private synchronized void update() {
 		while (true) {
+
 			try {
 				this.sendBuffer();
+
 				this.manager.server.update(this.manager);
 			} catch (IOException e1) {
-				System.err.println(" Übertragung nicht möglich !!!");
+				System.out.println("Übertragung nicht möglich");
+				if(manager.getMainFrame() != null){
+					JOptionPane.showMessageDialog(manager.getMainFrame().getContentPane(), "Update nicht möglich: Server nicht ereichbar", "Update Failed",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			try {
 				this.wait(UPDATE_INTERVALL * this.updateIntervallMod);
@@ -62,12 +73,12 @@ public class UpdaterThread extends Thread {
 	private void sendBuffer() throws IOException {
 		while (manager.buffer.getMessage() != null) {
 			Pair<Message, ControllCalls> tmp = manager.buffer.getMessage();
-			switch(tmp.getValue()){
+			switch (tmp.getValue()) {
 			case NEWMESSAGE:
 				this.manager.server.sendNewMessage(tmp.getKey());
 				break;
 			case EDITMESSAGE:
-				//TODO
+				// TODO
 				this.manager.server.deleteMessage(tmp.getKey());
 				this.manager.server.sendNewMessage(tmp.getKey());
 				break;
@@ -75,7 +86,7 @@ public class UpdaterThread extends Thread {
 				this.manager.server.deleteMessage(tmp.getKey());
 				break;
 			default:
-				break;	
+				break;
 			}
 			manager.buffer.removeMessageFromBuffer(tmp.getKey());
 		}

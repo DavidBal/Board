@@ -105,7 +105,7 @@ public class Konsole {
 			System.out.println("Msg(Press-Enter to Send): ");
 			String msg = "";
 			msg = leser.nextLine();
-			this.manager.buffer.addNewMessage(new Message(-1, msg, "Unknown", "Unknown", 1));// TODO
+			this.manager.buffer.addNewMessage(new Message(-1, msg, this.manager.user.getName(), "Unknown", 1));// TODO
 			break;
 		case 3:
 			System.out.println("Benutzer: ");

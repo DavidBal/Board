@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -46,8 +48,9 @@ public class MainFrame extends JFrame {
 		JButton createNewMessage = new JButton("New Message"); // TODO viellecht
 																// Icon
 		createNewMessage.setToolTipText("Create New Message");
-		
+
 		JButton forceUpdate = new JButton("Update");
+		forceUpdate.addMouseListener(new ForceUpdate(manager));
 
 		northZone.add(createNewMessage);
 		northZone.add(forceUpdate);
@@ -66,7 +69,7 @@ public class MainFrame extends JFrame {
 		System.out.println("Message Frame : " + msg.getText());
 
 		MessagePanel msgPanel = new MessagePanel(msg, this.manager);
-	
+
 		((JPanel) this.messageZone.getViewport().getView()).add(msgPanel);
 		this.messageZone.getViewport().getView().revalidate();
 
@@ -77,6 +80,20 @@ public class MainFrame extends JFrame {
 	public void removeAllMessagePanel() {
 
 		((JPanel) this.messageZone.getViewport().getView()).removeAll();
+
+	}
+
+	private class ForceUpdate extends MouseAdapter {
+
+		ClientManager manager;
+
+		public ForceUpdate(ClientManager manager) {
+			this.manager = manager;
+		}
+
+		public void mouseClicked(MouseEvent e) {
+			manager.forceUpdate();
+		}
 
 	}
 }

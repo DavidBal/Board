@@ -99,8 +99,8 @@ public class Database {
 			}
 
 			if (free == true) {
-				String sql = "INSERT INTO LOGIN (ID,USERNAME,PASSWORD,BERECHTIGUNG)" + "VALUES(" + this.getID("LOGIN")
-						+ ", '" + user.getName() + "' , '" + user.getPw() + "' , " + user.getBerechtigung() + " );";
+				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG)" + "VALUES(" + this.getID("LOGIN")
+						+ ", '" + user.getName() + "' , '" + user.getPw() + "' , '" + user.getBerechtigung().getInteger() + "' );";
 				stmt.executeUpdate(sql);
 				stmt.close();
 				Database.id++;
@@ -273,7 +273,7 @@ public class Database {
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
 				msgs.add(new Message(Integer.valueOf(rs.getString("ID")), rs.getString("NACHRICHT"),
-						rs.getString("ABTEILUNG"), rs.getString("USERNAME"),
+						rs.getString("USERNAME"), rs.getString("ABTEILUNG"),
 						Integer.valueOf(rs.getString("LASTCHANGE"))));
 
 			}	
