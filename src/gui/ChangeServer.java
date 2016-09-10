@@ -12,8 +12,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import client.ServerConector;
 import config.ClientManager;
+import update.ServerConector;
 
 public class ChangeServer extends JFrame {
 
@@ -40,13 +40,13 @@ public class ChangeServer extends JFrame {
 
 		JPanel ipZone = new JPanel();
 		ipZone.add(new JLabel("IP or ?")); // TODO
-		this.ip = new JTextField(manager.server.getServerIP().toString(), 15);
+		this.ip = new JTextField(manager.getServerConector().getServerIP().toString(), 15);
 		ipZone.add(this.ip);
 		this.add(ipZone, BorderLayout.NORTH);
 
 		JPanel portZone = new JPanel();
 		portZone.add(new JLabel("Port"));
-		this.port = new JTextField(Integer.toString(manager.server.getServerPort()), 15);
+		this.port = new JTextField(Integer.toString(manager.getServerConector().getServerPort()), 15);
 		portZone.add(this.port);
 		this.add(portZone, BorderLayout.CENTER);
 
@@ -71,12 +71,12 @@ public class ChangeServer extends JFrame {
 
 		public void mouseClicked(MouseEvent e) {
 			try {
-				manager.server = new ServerConector(this.changeServer.ip.getText(),
-						Integer.valueOf(this.changeServer.port.getText()));
+				manager.changeMainServer(new ServerConector(this.changeServer.ip.getText(),
+						Integer.valueOf(this.changeServer.port.getText())));
 
 				changeServer.setVisible(false);
 
-				changeServer.serverInfo.setText(manager.server.toString());
+				changeServer.serverInfo.setText(manager.getServerConector().toString());
 
 			} catch (UnknownHostException ex) {
 				JOptionPane.showMessageDialog(changeServer.getContentPane(), "Der Server ist nicht ereichbar!",

@@ -46,13 +46,13 @@ public class MessagePanel extends JPanel {
 		JButton push = new JButton("Push");
 		
 		//Disabel Buttons für  unberächtigte
-		if(!manager.user.getName().equals(message.getUsername())){
+		if(!manager.getUser().getName().equals(message.getUsername())){
 			edit.setEnabled(false);
 			delete.setEnabled(false);
 			push.setEnabled(false);
 		}
 		
-		if(1 < manager.user.getBerechtigung().getInteger() ){
+		if(1 < manager.getUser().getBerechtigung().getInteger() ){
 			edit.setEnabled(true);
 			delete.setEnabled(true);
 			push.setEnabled(true);

@@ -5,13 +5,13 @@
 
 package client;
 
-import java.io.IOException;
+import java.awt.EventQueue;
 import java.net.UnknownHostException;
 
 import clientTUISimpel.Konsole;
 import config.ClientManager;
-import dataOrga.Message;
 import gui.Login;
+import update.ServerConector;
 
 //TODO Client lagert alle Verbindungen auf externen Thread aus
 
@@ -36,36 +36,29 @@ public class ClientMain extends Thread {
 		try {
 			test = new ServerConector(this.ServerAdress, this.ServerPort);
 
-			manager.server = test;
-			// TODO Thread der das Auto-Uppdate der Daten �bernimmt!
+			manager.changeMainServer(test);
 
-			System.out.println(manager.server.toString());
+			System.out.println(manager.getServerConector().toString());
 
-			// ------ Testfaelle - Start------
-
-			try {
-				manager.server.ping();
-				manager.server.sendNewMessage(new Message(-1, "Hallo Welt!!", "Unknown", "Unknown", 1));
-			} catch (IOException e) {
-				
-				
-				e.printStackTrace();
-			}
-
-			// manager.server.auth("test", "test"); // Alles richtig
-			// manager.server.auth("Nein", "test"); // User falsch
-			// manager.server.auth("test", "Nein"); // PW falsch
-			// manager.server.auth("nein", "nein"); // Alles falsch
-			// ------ Testfaelle - Ende ------
-
-			manager.startUpdater();
+			
+			manager.startUpdater();// TODO Move to over position
+			
+			
+			EventQueue.invokeLater(new Runnable() {
+		        public void run() {
+		            Login window = new Login(manager);
+		            window.setVisible(true);            
+		        }
+		    });
+			
 			// Ruft das Test Menue auf !!Konsole!!
 			Konsole c = new Konsole(manager);
-			Login l = new Login(manager);
-			l.setVisible(true);
 			c.hauptMenue();
+			
+			
+			
 
-			manager.exitUpdater();
+			manager.getUpdaterThread().exitUpdater(); //TODO Nicht schliesen wenn MainFrame noch offen ist.
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

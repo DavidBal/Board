@@ -1,8 +1,7 @@
-package client;
+package update;
 
 import java.util.HashMap;
 
-import config.ClientManager;
 import dataOrga.ControllCalls;
 import dataOrga.Message;
 import dataOrga.Pair;
@@ -17,10 +16,10 @@ public class Buffer {
 	
 	HashMap<Message, ControllCalls> queue;
 
-	ClientManager manager;
+	UpdaterThread updater;
 
-	public Buffer(ClientManager manager) {
-		this.manager = manager;
+	public Buffer(UpdaterThread updater) {
+		this.updater = updater;
 		this.queue = new HashMap<Message, ControllCalls>();
 	}
 
@@ -29,21 +28,21 @@ public class Buffer {
 		synchronized (queue) {
 			queue.put(msg, ControllCalls.NEWMESSAGE);
 		}
-		manager.forceUpdate();
+		updater.forceUpdate();
 	}
 
 	public void addEditMessage(Message msg) {
 		synchronized (queue) {
 			queue.put(msg, ControllCalls.EDITMESSAGE);
 		}
-		manager.forceUpdate();
+		updater.forceUpdate();
 	}
 
 	public void addDeleteMessage(Message msg) {
 		synchronized (queue) {
 			queue.put(msg, ControllCalls.DELETEMSG);
 		}
-		manager.forceUpdate();
+		updater.forceUpdate();
 	}
 
 	/**

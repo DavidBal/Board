@@ -64,7 +64,7 @@ public class Login extends JFrame {
 		// Server Change
 		JPanel changeServerZone = new JPanel();
 		changeServerZone.setLayout(new BorderLayout());
-		JLabel serverInfo = new JLabel(this.manager.server.toString());
+		JLabel serverInfo = new JLabel(this.manager.getServerConector().toString());
 
 		JButton changeServerButton = new JButton("Change Server");
 		changeServerButton.setToolTipText("Change the Server that will be connected");
@@ -94,12 +94,12 @@ public class Login extends JFrame {
 			if (login.name.getText() != null || login.passwort.getText() != null) {
 				User user = new User(login.name.getText(), login.passwort.getText());
 
-				this.manager.user = user;
+				this.manager.setUser(user);
 
 				try {
-					manager.server.identifyUser(user);
+					manager.getServerConector().identifyUser(user);
 				} catch (IOException e1) {
-					msg = "Server nicht Ereichbar: " + this.manager.server.toString();
+					msg = "Server nicht Ereichbar: " + this.manager.getServerConector().toString();
 				}
 
 				if (user.getBerechtigung().getInteger() <= 0) {

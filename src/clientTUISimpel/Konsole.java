@@ -5,10 +5,10 @@ import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-import client.ServerConector;
 import config.ClientManager;
 import dataOrga.Message;
 import dataOrga.User;
+import update.ServerConector;
 
 /**
  * Implementiert auf Basis der Konsole einfache Testmoeglichkeiten des Clients!
@@ -95,7 +95,7 @@ public class Konsole {
 			break;
 		case 1:
 			try {
-				this.manager.server.ping();
+				this.manager.getServerConector().ping();
 			} catch (IOException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -105,7 +105,7 @@ public class Konsole {
 			System.out.println("Msg(Press-Enter to Send): ");
 			String msg = "";
 			msg = leser.nextLine();
-			this.manager.buffer.addNewMessage(new Message(-1, msg, this.manager.user.getName(), "Unknown", 1));// TODO
+			this.manager.getUpdaterThread().buffer.addNewMessage(new Message(-1, msg, this.manager.getUser().getName(), "Unknown", 1));// TODO
 			break;
 		case 3:
 			System.out.println("Benutzer: ");
@@ -114,7 +114,7 @@ public class Konsole {
 			String pw = leser.nextLine();
 			User user = new User(userName, pw, 0, 0);
 			try {
-				this.manager.server.identifyUser(user);
+				this.manager.getServerConector().identifyUser(user);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -161,7 +161,7 @@ public class Konsole {
 			break;
 		case 7:
 			System.out.println("Update Forced: ");
-			manager.forceUpdate();
+			manager.getUpdaterThread().forceUpdate();
 			break;
 		case 8:
 			System.out.println("Messages: ");
@@ -179,7 +179,7 @@ public class Konsole {
 			int berechtigung = Integer.valueOf(leser.nextLine());
 			User u = new User(username, passwort, berechtigung);
 			try {
-				if(manager.server.addUser(u)){
+				if(manager.getServerConector().addUser(u)){
 					System.out.println("User anlegen erfolgreich");
 				}else{
 					System.out.println("User anlegen NICHT erfolgreich");
@@ -195,14 +195,7 @@ public class Konsole {
 			String id = leser.nextLine();
 			for (Message message : manager.getMessages()){
 				if(message.getId() == Integer.valueOf(id)){
-					try {
-						if(manager.server.deleteMessage(message) == true){
-							delete++;
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					manager.getUpdaterThread().buffer.addDeleteMessage(message);
 				}	
 			}
 			System.out.println("Delete Msg  = " + delete);

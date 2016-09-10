@@ -8,11 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import client.Buffer;
-import client.ServerConector;
 import dataOrga.Message;
 import dataOrga.User;
 import gui.MainFrame;
+import update.ServerConector;
 import update.UpdaterThread;
 
 /**
@@ -27,30 +26,46 @@ public class ClientManager {
 	private final static String filePath = "ServerList.txt";
 
 	/**
-	 * Alle bekannten Server
+	 * TODO - Entfernen Alle bekannten Server
 	 */
 	public ArrayList<ServerConector> knownServer = new ArrayList<ServerConector>();
 
 	/**
 	 * Server der momentan angesprochen wird
 	 */
-	public ServerConector server;
+	private ServerConector server;
+
+	public ServerConector getServerConector() {
+		return this.server;
+	}
 
 	/**
 	 * User Daten des angemeldet Nutzers
 	 */
-	public User user;
+	private User user;
 
-	Thread update;
+	public User getUser() {
+		return this.user;
+	}
 
-	private MainFrame mf;
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	private UpdaterThread update;
+
+	public UpdaterThread getUpdaterThread() {
+		return this.update;
+	}
+
+	private MainFrame mainFrame;
 
 	public MainFrame getMainFrame() {
-		return this.mf;
+		return this.mainFrame;
 	}
 
 	public void setMainFrame(MainFrame mf) {
-		this.mf = mf;
+		this.mainFrame = mf;
 	}
 
 	private ArrayList<Message> Messages;
@@ -61,28 +76,26 @@ public class ClientManager {
 
 	public void addMessage(Message msg) {
 		this.Messages.add(msg);
-		if (this.mf != null) {
-			mf.addMessage(msg);
+		if (this.mainFrame != null) {
+			mainFrame.addMessage(msg);
 		}
 	}
 
-	public void deleteAllMessage(){
+	public void deleteAllMessage() {
 		this.Messages.clear();
-		if(this.mf != null){
-			mf.removeAllMessagePanel();
+		if (this.mainFrame != null) {
+			mainFrame.removeAllMessagePanel();
 		}
 	}
-
-	public Buffer buffer;
 
 	/**
 	 * Legt einen neue Manager fuer den Client an
 	 */
 	public ClientManager() {
 		this.readInServer();
-		this.buffer = new Buffer(this);
+
 		this.Messages = new ArrayList<Message>();
-		this.mf = null;
+		this.mainFrame = null;
 	}
 
 	/**
@@ -188,24 +201,5 @@ public class ClientManager {
 	public void startUpdater() {
 		this.update = new UpdaterThread(this);
 		this.update.start();
-	}
-
-	/**
-	 * Singalisiert dem UpdaterThread jetzt ein Update durch zuführen
-	 */
-	public void forceUpdate() {
-		synchronized (this.update) {
-			this.update.notify();
-		}
-	}
-
-	/**
-	 * Der UpdaterThread soll beendet werden.
-	 */
-	public void exitUpdater() {
-		synchronized (this.update) {
-			((UpdaterThread) this.update).exit = true;
-			this.update.notify();
-		}
 	}
 }

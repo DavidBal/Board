@@ -42,7 +42,7 @@ public class MainFrame extends JFrame {
 		JPanel northZone = new JPanel();
 		northZone.setLayout(new FlowLayout());
 
-		this.userInfo = new UserPanel(this.manager);
+		this.userInfo = new UserPanel(this.manager.getUser());
 		northZone.add(userInfo);
 
 		JButton createNewMessage = new JButton("New Message"); // TODO viellecht
@@ -92,7 +92,7 @@ public class MainFrame extends JFrame {
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			manager.forceUpdate();
+			manager.getUpdaterThread().forceUpdate();
 		}
 
 	}

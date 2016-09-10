@@ -18,6 +18,8 @@ public class UpdaterThread extends Thread {
 	private long updateIntervallMod = 1;
 	public boolean exit;
 
+	public Buffer buffer;
+
 	ClientManager manager;
 
 	/**
@@ -39,6 +41,7 @@ public class UpdaterThread extends Thread {
 		this.manager = manager;
 		this.setName("UpdaterThread");
 		this.exit = false;
+		this.buffer = new Buffer(this);
 
 	}
 
@@ -52,12 +55,12 @@ public class UpdaterThread extends Thread {
 			try {
 				this.sendBuffer();
 
-				this.manager.server.update(this.manager);
+				this.manager.getServerConector().update(this.manager);
 			} catch (IOException e1) {
 				System.out.println("Übertragung nicht möglich");
-				if(manager.getMainFrame() != null){
-					JOptionPane.showMessageDialog(manager.getMainFrame().getContentPane(), "Update nicht möglich: Server nicht ereichbar", "Update Failed",
-							JOptionPane.ERROR_MESSAGE);
+				if (manager.getMainFrame() != null) {
+					JOptionPane.showMessageDialog(manager.getMainFrame().getContentPane(),
+							"Update nicht möglich: Server nicht ereichbar", "Update Failed", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 			try {
@@ -71,24 +74,43 @@ public class UpdaterThread extends Thread {
 	}
 
 	private void sendBuffer() throws IOException {
-		while (manager.buffer.getMessage() != null) {
-			Pair<Message, ControllCalls> tmp = manager.buffer.getMessage();
+		while (buffer.getMessage() != null) {
+			Pair<Message, ControllCalls> tmp = buffer.getMessage();
 			switch (tmp.getValue()) {
 			case NEWMESSAGE:
-				this.manager.server.sendNewMessage(tmp.getKey());
+				this.manager.getServerConector().sendNewMessage(tmp.getKey());
 				break;
 			case EDITMESSAGE:
 				// TODO
-				this.manager.server.deleteMessage(tmp.getKey());
-				this.manager.server.sendNewMessage(tmp.getKey());
+				this.manager.getServerConector().deleteMessage(tmp.getKey());
+				this.manager.getServerConector().sendNewMessage(tmp.getKey());
 				break;
 			case DELETEMSG:
-				this.manager.server.deleteMessage(tmp.getKey());
+				this.manager.getServerConector().deleteMessage(tmp.getKey());
 				break;
 			default:
 				break;
 			}
-			manager.buffer.removeMessageFromBuffer(tmp.getKey());
+			buffer.removeMessageFromBuffer(tmp.getKey());
+		}
+	}
+
+	/**
+	 * Updater soll jetzt ein Update machen
+	 */
+	public void forceUpdate() {
+		synchronized (this) {
+			this.notify();
+		}
+	}
+
+	/**
+	 * Updater soll beendet werden.
+	 */
+	public void exitUpdater() {
+		synchronized (this) {
+			this.exit = true;
+			this.notify();
 		}
 	}
 }

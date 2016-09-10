@@ -6,8 +6,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import config.ClientManager;
 import dataOrga.User;
+
 
 public class UserPanel extends JPanel {
 
@@ -20,8 +20,8 @@ public class UserPanel extends JPanel {
 
 	JLabel name, id, berechtigung;
 
-	public UserPanel(ClientManager manager) {
-		this.user = manager.user;
+	public UserPanel(User user) {
+		this.user = user;
 		this.create();
 	}
 
@@ -32,9 +32,11 @@ public class UserPanel extends JPanel {
 		this.name = new JLabel(this.user.getName());
 		this.name.setPreferredSize(new Dimension(100,10));
 		this.name.setToolTipText("Benutzername");
+		
 		this.id = new JLabel(this.user.id() + "");
 		this.id.setPreferredSize(new Dimension(100,10));
 		this.id.setToolTipText("Benutzer ID");
+		
 		this.berechtigung = new JLabel(this.user.getBerechtigung().toString());
 		this.berechtigung.setPreferredSize(new Dimension(100,10));
 		this.berechtigung.setToolTipText("Berechtigung");
@@ -46,6 +48,9 @@ public class UserPanel extends JPanel {
 		this.repaint();
 	}
 
+	/**
+	 * Funktion bietet die Möglichkeit die Label up zu daten.
+	 */
 	public void update() {
 		this.name.setText(this.user.getName());
 		this.id.setText(this.user.id() + "");

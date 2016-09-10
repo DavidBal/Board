@@ -1,4 +1,4 @@
-package client;
+package update;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,9 +14,10 @@ import dataOrga.ControllCalls;
 import dataOrga.Message;
 import dataOrga.User;
 
+//TODO Client kann server Daten abfragen
 public class ServerConector {
 
-	private String name = "";
+	private String name;
 	private int serverPort;
 	private InetAddress serverIP;
 
@@ -27,6 +28,10 @@ public class ServerConector {
 	private BufferedReader in;
 	private PrintWriter out;
 
+	public String getName(){
+		return name;
+	}
+	
 	public int getServerPort() {
 		return serverPort;
 	}
@@ -48,6 +53,8 @@ public class ServerConector {
 		this.serverPort = serverPort;
 		
 		this.ereichbar = true;
+		
+		this.name = "";
 
 	}
 
@@ -116,7 +123,7 @@ public class ServerConector {
 	 * @param msg
 	 * @throws ConnectException
 	 */
-	public void sendNewMessage(Message msg) throws IOException {
+	protected void sendNewMessage(Message msg) throws IOException {
 		this.connect();
 
 		this.out.println(dataOrga.ControllCalls.NEWMESSAGE);
@@ -127,6 +134,31 @@ public class ServerConector {
 
 		this.disconnect();
 	}
+	/**
+	 * Löscht eine Nachricht 
+	 * @param msg
+	 * @return
+	 * @throws IOException
+	 */
+	protected boolean deleteMessage(Message msg) throws IOException {
+	
+		boolean loeschen_erfolgreich = false;
+	
+		this.connect();
+	
+		this.out.println(ControllCalls.DELETEMSG.toString());
+		this.out.println(msg.toString());
+	
+		try {
+			loeschen_erfolgreich = Boolean.valueOf(this.in.readLine());
+	
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return loeschen_erfolgreich;
+	}
 
 	/**
 	 * Sendet eine Update auffoderung an den Server.
@@ -134,7 +166,7 @@ public class ServerConector {
 	 * @param manager
 	 * @throws ConnectException
 	 */
-	public void update(ClientManager manager) throws IOException {
+	protected void update(ClientManager manager) throws IOException {
 		this.connect();
 
 		manager.deleteAllMessage(); // TODO Besser
@@ -157,7 +189,7 @@ public class ServerConector {
 		this.disconnect();
 	}
 
-	// TODO Make this Function usefull
+
 	/**
 	 * @throws ConnectException
 	 * 
@@ -199,26 +231,6 @@ public class ServerConector {
 
 		this.disconnect();
 		return anlegen_erfolgreich;
-	}
-
-	public boolean deleteMessage(Message msg) throws IOException {
-
-		boolean loeschen_erfolgreich = false;
-
-		this.connect();
-
-		this.out.println(ControllCalls.DELETEMSG.toString());
-		this.out.println(msg.toString());
-
-		try {
-			loeschen_erfolgreich = Boolean.valueOf(this.in.readLine());
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return loeschen_erfolgreich;
 	}
 
 	@Override
