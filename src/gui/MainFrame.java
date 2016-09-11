@@ -10,6 +10,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import client.ClientMain;
 import config.ClientManager;
 import dataOrga.Message;
 
@@ -23,11 +25,16 @@ public class MainFrame extends JFrame {
 	UserPanel userInfo;
 
 	ClientManager manager;
+	ClientMain clientMain;
 	JScrollPane messageZone;
 
-	public MainFrame(ClientManager manager) {
+	public MainFrame(ClientManager manager, ClientMain clientMain) {
 		this.manager = manager;
 		this.messageZone = new JScrollPane(new JPanel());
+		this.clientMain = clientMain;
+		if(clientMain == null){
+			System.out.println("Fehler clientMain");
+		}
 
 		this.create();
 	}
@@ -59,6 +66,8 @@ public class MainFrame extends JFrame {
 		this.add(messageZone, BorderLayout.CENTER);
 		// TODO ActionListener
 
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		this.repaint();
 		this.pack();
 

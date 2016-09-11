@@ -5,6 +5,8 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.JButton;
@@ -14,6 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import client.ClientMain;
 import config.ClientManager;
 import dataOrga.User;
 
@@ -27,12 +31,18 @@ public class Login extends JFrame {
 	private ClientManager manager;
 	private JTextField name;
 	private JTextField passwort;
+	private ClientMain clientMain;
 
-	public Login(ClientManager manager) {
+	public Login(ClientManager manager, ClientMain clientMain) {
 		super();
 		this.manager = manager;
 		this.setTitle("Login");
+
+		this.clientMain = clientMain;
 		this.create();
+		if (clientMain == null) {
+			System.out.println("Fehler clientMain");
+		}
 	}
 
 	private void create() {
@@ -76,6 +86,9 @@ public class Login extends JFrame {
 		cp.add(loginZone);
 		cp.add(changeServerZone);
 
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		this.pack();
 		this.repaint();
 	}
@@ -116,9 +129,11 @@ public class Login extends JFrame {
 
 					// TODO Start to Build Main interface
 
-					MainFrame mainFrame = new MainFrame(this.manager);
+					
+					MainFrame mainFrame = new MainFrame(this.manager, this.login.clientMain);
 					mainFrame.setVisible(true);
 					this.manager.setMainFrame(mainFrame);
+					
 
 				}
 			} else {
@@ -143,7 +158,6 @@ public class Login extends JFrame {
 			ChangeServer changeServer = new ChangeServer(this.manager, this.serverInfo);
 			changeServer.setVisible(true);
 		}
-
 	}
 
 }

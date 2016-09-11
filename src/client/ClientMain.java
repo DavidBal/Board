@@ -20,10 +20,10 @@ public class ClientMain extends Thread {
 	private int ServerPort = 4690;
 	private String ServerAdress = "localhost";
 
-	public ClientMain(){
+	public ClientMain() {
 		this.setName("ClientMain");
 	}
-	
+
 	/**
 	 *
 	 * @param args
@@ -40,28 +40,49 @@ public class ClientMain extends Thread {
 
 			System.out.println(manager.getServerConector().toString());
 
-			
 			manager.startUpdater();// TODO Move to over position
-			
-			
-			EventQueue.invokeLater(new Runnable() {
-		        public void run() {
-		            Login window = new Login(manager);
-		            window.setVisible(true);            
-		        }
-		    });
-			
-			// Ruft das Test Menue auf !!Konsole!!
-			Konsole c = new Konsole(manager);
-			c.hauptMenue();
-			
-			
-			
 
-			manager.getUpdaterThread().exitUpdater(); //TODO Nicht schliesen wenn MainFrame noch offen ist.
+			EventQueue.invokeLater(new GuiStarter(manager, this));
+				// Ruft das Test Menue auf !!Konsole!!
+				// Konsole c = new Konsole(manager);
+				// c.hauptMenue();
+			synchronized (this) {
+				
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			manager.getUpdaterThread().exitUpdater(); // TODO Nicht schliesen
+														// wenn MainFrame noch
+														// offen ist.
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+
+	}
+
+	
+
+	
+
+	private class GuiStarter implements Runnable {
+
+		ClientManager manager;
+		ClientMain cm;
+
+		public GuiStarter(ClientManager manager, ClientMain cm) {
+			this.manager = manager;
+			this.cm = cm;
+		}
+
+		@Override
+		public void run() {
+			Login window = new Login(manager, cm);
+			window.setVisible(true);
 		}
 
 	}
