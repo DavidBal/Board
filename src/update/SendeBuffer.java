@@ -11,14 +11,14 @@ import dataOrga.Pair;
  *Klasse um Nachtichten zwischen zu speichern.
  * 
  */
-public class Buffer {
+public class SendeBuffer {
 	
 	
 	HashMap<Message, ControllCalls> queue;
 
 	UpdaterThread updater;
 
-	public Buffer(UpdaterThread updater) {
+	public SendeBuffer(UpdaterThread updater) {
 		this.updater = updater;
 		this.queue = new HashMap<Message, ControllCalls>();
 	}

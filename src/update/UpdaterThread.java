@@ -18,7 +18,11 @@ public class UpdaterThread extends Thread {
 	private long updateIntervallMod = 1;
 	public boolean exit;
 
-	public Buffer buffer;
+	private SendeBuffer buffer;
+
+	public SendeBuffer getBuffer() {
+		return buffer;
+	}
 
 	ClientManager manager;
 
@@ -41,7 +45,7 @@ public class UpdaterThread extends Thread {
 		this.manager = manager;
 		this.setName("UpdaterThread");
 		this.exit = false;
-		this.buffer = new Buffer(this);
+		this.buffer = new SendeBuffer(this);
 
 	}
 

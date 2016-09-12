@@ -12,7 +12,7 @@ import javax.swing.JTextArea;
 
 import dataOrga.Message;
 import dataOrga.User;
-import update.Buffer;
+import update.SendeBuffer;
 
 public class MessageNewAndEditFrame extends JFrame {
 
@@ -21,19 +21,19 @@ public class MessageNewAndEditFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = 4316350965827664233L;
 
-	Buffer buffer;
+	SendeBuffer buffer;
 	Message message;
 	JTextArea msgText;
 	User user;
 
-	public MessageNewAndEditFrame(Buffer buffer, User user, Message message) {
+	public MessageNewAndEditFrame(SendeBuffer buffer, User user, Message message) {
 		this.buffer = buffer;
 		this.message = message;
 		this.user = user;
 		this.create();
 	}
 
-	public MessageNewAndEditFrame(Buffer buffer, User user) {
+	public MessageNewAndEditFrame(SendeBuffer buffer, User user) {
 		this.buffer = buffer;
 		this.user = user;
 		this.message = null;
@@ -51,6 +51,10 @@ public class MessageNewAndEditFrame extends JFrame {
 		this.setLayout(new BorderLayout());
 
 		this.msgText = new JTextArea(20, 60);
+
+		if (this.message != null) {
+			this.msgText.setText(this.message.getText());
+		}
 		JScrollPane msgTextScrollPane = new JScrollPane(msgText);
 		this.add(msgTextScrollPane, BorderLayout.CENTER);
 
@@ -66,13 +70,13 @@ public class MessageNewAndEditFrame extends JFrame {
 
 	private class SendMessageEvent extends MouseAdapter {
 
-		Buffer buffer;
+		SendeBuffer buffer;
 		JTextArea msgText;
 		Message msg;
 		User user;
 		JFrame mother;
 
-		public SendMessageEvent(JFrame mother, Buffer buffer, JTextArea msgText, Message msg, User user) {
+		public SendMessageEvent(JFrame mother, SendeBuffer buffer, JTextArea msgText, Message msg, User user) {
 			this.mother = mother;
 			this.buffer = buffer;
 			this.msgText = msgText;

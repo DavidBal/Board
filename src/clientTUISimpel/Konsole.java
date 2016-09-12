@@ -105,7 +105,7 @@ public class Konsole {
 			System.out.println("Msg(Press-Enter to Send): ");
 			String msg = "";
 			msg = leser.nextLine();
-			this.manager.getUpdaterThread().buffer.addNewMessage(new Message(-1, msg, this.manager.getUser().getName(), "Unknown", 1));// TODO
+			this.manager.getUpdaterThread().getBuffer().addNewMessage(new Message(-1, msg, this.manager.getUser().getName(), "Unknown", 1));// TODO
 			break;
 		case 3:
 			System.out.println("Benutzer: ");
@@ -195,7 +195,7 @@ public class Konsole {
 			String id = leser.nextLine();
 			for (Message message : manager.getMessages()){
 				if(message.getId() == Integer.valueOf(id)){
-					manager.getUpdaterThread().buffer.addDeleteMessage(message);
+					manager.getUpdaterThread().getBuffer().addDeleteMessage(message);
 				}	
 			}
 			System.out.println("Delete Msg  = " + delete);

@@ -13,8 +13,9 @@ import javax.swing.JTextArea;
 
 import config.ClientManager;
 import dataOrga.Message;
+import dataOrga.User;
 import dataOrga.User.Berechtigung;
-import update.Buffer;
+import update.SendeBuffer;
 
 public class MessagePanel extends JPanel {
 
@@ -44,15 +45,17 @@ public class MessagePanel extends JPanel {
 		msg.setEditable(false);
 
 		JButton edit = new JButton("Edit");
+		edit.addMouseListener(
+				new EditMessageEvent(this.manager.getUpdaterThread().getBuffer(), message, this.manager.getUser()));
 		JButton delete = new JButton("Delete");
-		delete.addMouseListener(new DeleteMessage(this.manager.getUpdaterThread().buffer, this.message));
+		delete.addMouseListener(new DeleteMessage(this.manager.getUpdaterThread().getBuffer(), this.message));
 		JButton push = new JButton("Push");
+		push.setEnabled(false);
 
 		// Disabel Buttons für unberächtigte
 		if (!manager.getUser().getName().equals(message.getUsername())) {
 			edit.setEnabled(false);
 			delete.setEnabled(false);
-			push.setEnabled(false);
 		}
 
 		if (Berechtigung.Abteilungsleiter.getInteger() <= manager.getUser().getBerechtigung().getInteger()) {
@@ -73,23 +76,46 @@ public class MessagePanel extends JPanel {
 
 	private class DeleteMessage extends MouseAdapter {
 
-		Buffer buffer;
+		SendeBuffer buffer;
 		Message message;
 
-		public DeleteMessage(Buffer buffer, Message message) {
+		public DeleteMessage(SendeBuffer buffer, Message message) {
 			this.buffer = buffer;
 			this.message = message;
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			// TODO nachfrage
-
 			int dialogButton = JOptionPane.YES_NO_OPTION;
 			int dialogResult = JOptionPane.showConfirmDialog(null, "Wollen sie die Nachricht wircklich loeschen?",
 					"Abfrage", dialogButton);
 
 			if (dialogResult == JOptionPane.YES_OPTION) {
 				this.buffer.addDeleteMessage(message);
+			}
+		}
+
+	}
+
+	private class EditMessageEvent extends MouseAdapter {
+
+		SendeBuffer buffer;
+		Message message;
+		User user;
+
+		public EditMessageEvent(SendeBuffer buffer, Message message, User user) {
+			this.buffer = buffer;
+			this.message = message;
+			this.user = user;
+		}
+
+		public void mouseClicked(MouseEvent e) {
+			int dialogButton = JOptionPane.YES_NO_OPTION;
+			int dialogResult = JOptionPane.showConfirmDialog(null, "Wollen sie die Nachricht wircklich editieren?",
+					"Abfrage", dialogButton);
+
+			if (dialogResult == JOptionPane.YES_OPTION) {
+				MessageNewAndEditFrame editor = new MessageNewAndEditFrame(buffer, user, message);
+				editor.setVisible(true);
 			}
 		}
 

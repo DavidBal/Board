@@ -13,7 +13,7 @@ import javax.swing.JScrollPane;
 import config.ClientManager;
 import dataOrga.Message;
 import dataOrga.User;
-import update.Buffer;
+import update.SendeBuffer;
 import update.UpdaterThread;
 
 public class MainFrame extends JFrame {
@@ -50,7 +50,7 @@ public class MainFrame extends JFrame {
 
 		JButton createNewMessage = new JButton("New Message"); // TODO viellecht
 																// Icon
-		createNewMessage.addMouseListener(new newMessageEvent(manager.getUpdaterThread().buffer, manager.getUser()));
+		createNewMessage.addMouseListener(new newMessageEvent(manager.getUpdaterThread().getBuffer(), manager.getUser()));
 		createNewMessage.setToolTipText("Create New Message");
 
 		JButton forceUpdate = new JButton("Update");
@@ -102,10 +102,10 @@ public class MainFrame extends JFrame {
 
 	private class newMessageEvent extends MouseAdapter {
 
-		Buffer buffer;
+		SendeBuffer buffer;
 		User user;
 
-		public newMessageEvent(Buffer buffer, User user) {
+		public newMessageEvent(SendeBuffer buffer, User user) {
 			this.buffer = buffer;
 			this.user = user;
 		}
