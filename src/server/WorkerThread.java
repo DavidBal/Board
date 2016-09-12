@@ -86,9 +86,8 @@ public class WorkerThread extends Thread {
 			break;
 		case NEWMESSAGE:
 			try {
-				String msg = this.in.readLine();
-				if (ServerManager.debug)
-					System.out.println(msg);
+				String msg = Message.getMessage(in);
+
 				this.manager.database.addMessage(Message.stringToMessage(msg));
 				this.in.readLine();
 				// TODO END ??
@@ -115,7 +114,7 @@ public class WorkerThread extends Thread {
 		case UPDATE:
 			ArrayList<Message> msgs = this.manager.database.loadMessages(0);
 			for (Message msg : msgs) {
-				this.out.println(msg.toString());
+				msg.sendMessage(out);
 			}
 
 			this.out.println(ControllCalls.END);
@@ -140,11 +139,10 @@ public class WorkerThread extends Thread {
 
 		case DELETEMSG:
 			try {
-				
-				Message msg = Message.stringToMessage(in.readLine());
+
+				Message msg = Message.stringToMessage(Message.getMessage(in));
 				boolean loeschen_erfolgreich = this.manager.database.deleteMessage(msg);
 				this.out.println(loeschen_erfolgreich);
-				
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

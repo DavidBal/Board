@@ -8,9 +8,8 @@ package client;
 import java.awt.EventQueue;
 import java.net.UnknownHostException;
 
-import clientTUISimpel.Konsole;
 import config.ClientManager;
-import gui.Login;
+import gui.GuiStarterLogin;
 import update.ServerConector;
 
 //TODO Client lagert alle Verbindungen auf externen Thread aus
@@ -42,12 +41,11 @@ public class ClientMain extends Thread {
 
 			manager.startUpdater();// TODO Move to over position
 
-			EventQueue.invokeLater(new GuiStarter(manager, this));
-				// Ruft das Test Menue auf !!Konsole!!
-				// Konsole c = new Konsole(manager);
-				// c.hauptMenue();
+			EventQueue.invokeLater(new GuiStarterLogin(manager));
+			// Ruft das Test Menue auf !!Konsole!!
+			// Konsole c = new Konsole(manager);
+			// c.hauptMenue();
 			synchronized (this) {
-				
 				try {
 					this.wait();
 				} catch (InterruptedException e) {
@@ -65,25 +63,5 @@ public class ClientMain extends Thread {
 
 	}
 
-	
 
-	
-
-	private class GuiStarter implements Runnable {
-
-		ClientManager manager;
-		ClientMain cm;
-
-		public GuiStarter(ClientManager manager, ClientMain cm) {
-			this.manager = manager;
-			this.cm = cm;
-		}
-
-		@Override
-		public void run() {
-			Login window = new Login(manager, cm);
-			window.setVisible(true);
-		}
-
-	}
 }

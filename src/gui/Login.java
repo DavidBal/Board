@@ -5,8 +5,6 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.JButton;
@@ -17,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import client.ClientMain;
 import config.ClientManager;
 import dataOrga.User;
 
@@ -31,18 +28,13 @@ public class Login extends JFrame {
 	private ClientManager manager;
 	private JTextField name;
 	private JTextField passwort;
-	private ClientMain clientMain;
 
-	public Login(ClientManager manager, ClientMain clientMain) {
+	public Login(ClientManager manager) {
 		super();
 		this.manager = manager;
 		this.setTitle("Login");
 
-		this.clientMain = clientMain;
 		this.create();
-		if (clientMain == null) {
-			System.out.println("Fehler clientMain");
-		}
 	}
 
 	private void create() {
@@ -52,6 +44,22 @@ public class Login extends JFrame {
 		cp.setLayout(layout);
 
 		// User
+		JPanel loginZone = createUserLoginPanel();
+
+		// Server Change
+		JPanel changeServerZone = createServerChangePanel();
+
+		cp.add(loginZone);
+		cp.add(changeServerZone);
+
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		this.pack();
+		this.repaint();
+	}
+
+	private JPanel createUserLoginPanel() {
 		JPanel loginZone = new JPanel();
 		loginZone.setLayout(new BorderLayout());
 
@@ -70,8 +78,10 @@ public class Login extends JFrame {
 		JButton LoginButton = new JButton("Login");
 		LoginButton.addMouseListener(new LoginButtonEvent(this.manager, this));
 		loginZone.add(LoginButton, BorderLayout.SOUTH);
+		return loginZone;
+	}
 
-		// Server Change
+	private JPanel createServerChangePanel() {
 		JPanel changeServerZone = new JPanel();
 		changeServerZone.setLayout(new BorderLayout());
 		JLabel serverInfo = new JLabel(this.manager.getServerConector().toString());
@@ -82,15 +92,7 @@ public class Login extends JFrame {
 
 		changeServerZone.add(serverInfo, BorderLayout.NORTH);
 		changeServerZone.add(changeServerButton, BorderLayout.SOUTH);
-
-		cp.add(loginZone);
-		cp.add(changeServerZone);
-
-
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		this.pack();
-		this.repaint();
+		return changeServerZone;
 	}
 
 	private class LoginButtonEvent extends MouseAdapter {
@@ -130,7 +132,7 @@ public class Login extends JFrame {
 					// TODO Start to Build Main interface
 
 					
-					MainFrame mainFrame = new MainFrame(this.manager, this.login.clientMain);
+					MainFrame mainFrame = new MainFrame(this.manager);
 					mainFrame.setVisible(true);
 					this.manager.setMainFrame(mainFrame);
 					

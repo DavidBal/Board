@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -11,9 +10,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import client.ClientMain;
 import config.ClientManager;
 import dataOrga.Message;
+import dataOrga.User;
+import update.Buffer;
+import update.UpdaterThread;
 
 public class MainFrame extends JFrame {
 
@@ -25,16 +26,11 @@ public class MainFrame extends JFrame {
 	UserPanel userInfo;
 
 	ClientManager manager;
-	ClientMain clientMain;
-	JScrollPane messageZone;
+	JPanel messageList;
 
-	public MainFrame(ClientManager manager, ClientMain clientMain) {
+	public MainFrame(ClientManager manager) {
 		this.manager = manager;
-		this.messageZone = new JScrollPane(new JPanel());
-		this.clientMain = clientMain;
-		if(clientMain == null){
-			System.out.println("Fehler clientMain");
-		}
+		this.messageList = new JPanel();
 
 		this.create();
 	}
@@ -43,31 +39,32 @@ public class MainFrame extends JFrame {
 
 		this.setLayout(new BorderLayout());
 
-		((JPanel) this.messageZone.getViewport().getView())
-				.setLayout(new BoxLayout((JPanel) this.messageZone.getViewport().getView(), BoxLayout.Y_AXIS));
+		messageList.setLayout(new BoxLayout(messageList, BoxLayout.Y_AXIS));
+		JScrollPane messageScrollPane = new JScrollPane(this.messageList);
 
-		JPanel northZone = new JPanel();
-		northZone.setLayout(new FlowLayout());
+		JPanel eastPanel = new JPanel();
+		eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
 
 		this.userInfo = new UserPanel(this.manager.getUser());
-		northZone.add(userInfo);
+		eastPanel.add(userInfo);
 
 		JButton createNewMessage = new JButton("New Message"); // TODO viellecht
 																// Icon
+		createNewMessage.addMouseListener(new newMessageEvent(manager.getUpdaterThread().buffer, manager.getUser()));
 		createNewMessage.setToolTipText("Create New Message");
 
 		JButton forceUpdate = new JButton("Update");
-		forceUpdate.addMouseListener(new ForceUpdate(manager));
+		forceUpdate.addMouseListener(new ForceUpdate(manager.getUpdaterThread()));
 
-		northZone.add(createNewMessage);
-		northZone.add(forceUpdate);
+		eastPanel.add(createNewMessage);
+		eastPanel.add(forceUpdate);
 
-		this.add(northZone, BorderLayout.NORTH);
-		this.add(messageZone, BorderLayout.CENTER);
+		this.add(eastPanel, BorderLayout.EAST);
+		this.add(messageScrollPane, BorderLayout.CENTER);
 		// TODO ActionListener
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		this.repaint();
 		this.pack();
 
@@ -79,29 +76,43 @@ public class MainFrame extends JFrame {
 
 		MessagePanel msgPanel = new MessagePanel(msg, this.manager);
 
-		((JPanel) this.messageZone.getViewport().getView()).add(msgPanel);
-		this.messageZone.getViewport().getView().revalidate();
-
-		this.messageZone.repaint();
-
+		messageList.add(msgPanel);
+		messageList.revalidate();
 	}
 
 	public void removeAllMessagePanel() {
 
-		((JPanel) this.messageZone.getViewport().getView()).removeAll();
+		messageList.removeAll();
 
 	}
 
 	private class ForceUpdate extends MouseAdapter {
 
-		ClientManager manager;
+		UpdaterThread updater;
 
-		public ForceUpdate(ClientManager manager) {
-			this.manager = manager;
+		public ForceUpdate(UpdaterThread updater) {
+			this.updater = updater;
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			manager.getUpdaterThread().forceUpdate();
+			updater.forceUpdate();
+		}
+
+	}
+
+	private class newMessageEvent extends MouseAdapter {
+
+		Buffer buffer;
+		User user;
+
+		public newMessageEvent(Buffer buffer, User user) {
+			this.buffer = buffer;
+			this.user = user;
+		}
+
+		public void mouseClicked(MouseEvent e) {
+			MessageNewAndEditFrame tmp = new MessageNewAndEditFrame(buffer, user);
+			tmp.setVisible(true);
 		}
 
 	}

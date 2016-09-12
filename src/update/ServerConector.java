@@ -22,16 +22,16 @@ public class ServerConector {
 	private InetAddress serverIP;
 
 	public boolean ereichbar = false;
-	
+
 	private Socket socket;
 
 	private BufferedReader in;
 	private PrintWriter out;
 
-	public String getName(){
+	public String getName() {
 		return name;
 	}
-	
+
 	public int getServerPort() {
 		return serverPort;
 	}
@@ -49,11 +49,11 @@ public class ServerConector {
 	public ServerConector(String serverIP, int serverPort) throws UnknownHostException {
 
 		this.serverIP = InetAddress.getByName(serverIP);
-		
+
 		this.serverPort = serverPort;
-		
+
 		this.ereichbar = true;
-		
+
 		this.name = "";
 
 	}
@@ -127,36 +127,41 @@ public class ServerConector {
 		this.connect();
 
 		this.out.println(dataOrga.ControllCalls.NEWMESSAGE);
-		//
-		this.out.println(msg.toString());
+		System.err.println(dataOrga.ControllCalls.NEWMESSAGE);
+
+		msg.sendMessage(out);
+
 		//
 		this.out.println(dataOrga.ControllCalls.END);
+		System.err.println(dataOrga.ControllCalls.END);
 
 		this.disconnect();
 	}
+
 	/**
-	 * Löscht eine Nachricht 
+	 * Löscht eine Nachricht
+	 * 
 	 * @param msg
 	 * @return
 	 * @throws IOException
 	 */
 	protected boolean deleteMessage(Message msg) throws IOException {
-	
+
 		boolean loeschen_erfolgreich = false;
-	
+
 		this.connect();
-	
+
 		this.out.println(ControllCalls.DELETEMSG.toString());
-		this.out.println(msg.toString());
-	
+		msg.sendMessage(out);
+
 		try {
 			loeschen_erfolgreich = Boolean.valueOf(this.in.readLine());
-	
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 		return loeschen_erfolgreich;
 	}
 
@@ -176,10 +181,13 @@ public class ServerConector {
 		String input;
 
 		try {
+			in.mark(1000000);
 			input = in.readLine();
 
 			while (!input.equals(dataOrga.ControllCalls.END.toString())) {
-				manager.addMessage(Message.stringToMessage(input));
+				in.reset();
+				manager.addMessage(Message.stringToMessage(Message.getMessage(in)));
+				in.mark(1000000);
 				input = in.readLine();
 			}
 		} catch (IOException e) {
@@ -188,7 +196,6 @@ public class ServerConector {
 		}
 		this.disconnect();
 	}
-
 
 	/**
 	 * @throws ConnectException
