@@ -20,12 +20,16 @@ import dataOrga.User;
 public class Database {
 	private Connection conn = null;
 
-	static int id = 1;
+	private String abteilungsName;
+	private int abtID;
+	private final int multipikator = 10000;
 
 	/**
 	 * Klasse Database wird erstellt.
 	 */
-	public Database() {
+	public Database(String abteilungsName, int abtID) {
+		this.abteilungsName = abteilungsName;
+		this.abtID = abtID;
 		this.conn = this.dbConnector();
 		this.createTables();
 	}
@@ -37,7 +41,7 @@ public class Database {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			Connection conn = DriverManager.getConnection("jdbc:sqlite:Datenbank\\messages.sqlite");
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:Datenbank\\" + this.abteilungsName + ".sqlite");
 			return conn;
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO
@@ -91,7 +95,7 @@ public class Database {
 
 			String query = "SELECT USERNAME from LOGIN";
 
-			//Überprüft ob Username schon Vergeben
+			// Überprüft ob Username schon Vergeben
 			PreparedStatement output = conn.prepareStatement(query);
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
@@ -101,16 +105,17 @@ public class Database {
 				}
 			}
 
-			//Falls nicht neuer user anlegen
+			// Falls nicht neuer user anlegen
 			if (free == true) {
-				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG)" + "VALUES(" + this.getID("LOGIN")
-						+ ", '" + user.getName() + "' , '" + user.getPw() + "' , '" + user.getBerechtigung().getInteger() + "' );";
+				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG)" + "VALUES("
+						+ this.getID("LOGIN") + ", '" + user.getName() + "' , '" + user.getPw() + "' , '"
+						+ user.getBerechtigung().getInteger() + "' );";
 				stmt.executeUpdate(sql);
 				stmt.close();
-				Database.id++;
+
 				return free;
 			} else {
-				//Falls vergeben nichts tun
+				// Falls vergeben nichts tun
 				return free;
 			}
 		} catch (SQLException e) {
@@ -224,6 +229,10 @@ public class Database {
 			if (msg.getId() < 0) {
 				msg.setId(this.getID("NACHRICHT"));
 			}
+			
+			if (msg.getAbteilung().equals("Unknown")){
+				msg.setAbteilung(this.abteilungsName);
+			}
 
 			String sql = "INSERT INTO NACHRICHT (ID,NACHRICHT,ABTEILUNG,USERNAME,LASTCHANGE)" + "VALUES(" + msg.getId()
 					+ ", '" + msg.getText() + "' , '" + msg.getAbteilung() + "' , '" + msg.getUsername() + "' , "
@@ -281,35 +290,38 @@ public class Database {
 						rs.getString("USERNAME"), rs.getString("ABTEILUNG"),
 						Integer.valueOf(rs.getString("LASTCHANGE"))));
 
-			}	
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		return msgs;
 	}
-	
+
 	/**
 	 * Gibt eine Liste aller bekannten Benutzer Zurück.
+	 * 
 	 * @return
 	 */
-	public ArrayList<User> loadUser(){
+	public ArrayList<User> loadUser() {
 		ArrayList<User> users = new ArrayList<User>();
 		try {
 			String query = "Select * from LOGIN;";
 			PreparedStatement output = conn.prepareStatement(query);
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
-				users.add(new User(rs.getString("USERNAME"), null , Integer.valueOf(rs.getString("BERECHTIGUNG")),  Integer.valueOf(rs.getString("ID"))));
-			}	
+				users.add(new User(rs.getString("USERNAME"), null, Integer.valueOf(rs.getString("BERECHTIGUNG")),
+						Integer.valueOf(rs.getString("ID"))));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return users;
 	}
 
-	/**TODO Server eigene ID
-	 * Sucht die größte frei ID 
+	/**
+	 * TODO Server eigene ID Sucht die größte frei ID
+	 * 
 	 * @param table
 	 * @return
 	 */
@@ -321,7 +333,7 @@ public class Database {
 			PreparedStatement output = conn.prepareStatement(query);
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
-				tmp = (int) rs.getLong(1);
+				tmp = ((int) rs.getLong(1) - this.abtID) / this.multipikator;
 				if (tmp > id) {
 					id = tmp;
 				}
@@ -333,7 +345,7 @@ public class Database {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return id;
+		return id * this.multipikator + this.abtID;
 	}
 
 }

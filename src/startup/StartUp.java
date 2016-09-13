@@ -11,28 +11,33 @@ public class StartUp {
 
 	public static void main(String[] args) {
 
-		if (args.length == 0) {
-			System.out.println(" -c  : Starting the Client");
-			System.out.println(" -s  : Starting the Server");
-		} else if (args.length > 0) {
-			if (args[0].equals("-s") || args[0].equals("-S")) {
-				StartUp.server(args);
+		try {
+			if (args.length == 0) {
+				System.out.println(" -c  : Starting the Client");
+				System.out.println(" -s [Abteilungs-Name] [Abteilungs-ID 10-9999] [Port] : Starting the Server");
+			} else if (args.length > 0) {
+				if (args[0].equals("-s") || args[0].equals("-S")) {
+					StartUp.server(args);
+				}
+				if (args[0].equals("-c") || args[0].equals("-C")) {
+					StartUp.client(args);
+				}
+			} else {
+				System.out.println(" -c  : Starting the Client");
+				System.out.println(" -s [Abteilungs-Name] [Abteilungs-ID 10-9999] [Port] : Starting the Server");
 			}
-			if (args[0].equals("-c") || args[0].equals("-C")) {
-				StartUp.client(args);
-			}
-		} else {
-			System.out.println(" -c  : Starting the Client");
-			System.out.println(" -s  : Starting the Server");
-		}
 
-		// Nur beendet wenn Thread geschlossen
-		if (StartUp.threadactiv == true) {
-			try {
-				thread.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			// Nur beendet wenn Thread geschlossen
+			if (StartUp.threadactiv == true) {
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		System.out.println("StartUp - Closed - Process End");
 	}
@@ -53,25 +58,46 @@ public class StartUp {
 	 * Startet den Thread Server und bereitet diesen auch vor
 	 * 
 	 * @param arg
+	 * @throws Exception
 	 */
-	public static void server(String[] arg) {
+	public static void server(String[] arg) throws Exception {
 
 		System.out.println("Starting Server:");
 
-		ServerManager serverManager = new ServerManager();
+		String abtName = "";
+		int abtID = 0;
+		int port = 0;
 
-		if (arg.length == 2) {
+		if (arg.length >= 3) {
+			// Abteilungs Name NEED
 			if (arg[1].equals("?")) {
-				System.out.println("Change port by: [Port]");
+				System.out.println("Ändere Abteilungs-Name");
 				return;
 			}
-			serverManager.setServerPort(Integer.valueOf(arg[1]));
-			System.out.println("ServerPort Changed: " + arg[1]);
+			abtName = arg[1];
+
+			// Abteilungs Name Need min 2 stellig
+			if (arg[2].equals("?")) {
+				System.out.println("Abteilungs Nummer (Muss einmalig sein!!) Zwischen 10 - 9999");
+			}
+			abtID = Integer.valueOf(arg[2]);
+
+			// Port
+			if (arg.length == 4) {
+				if (arg[3].equals("?")) {
+					System.out.println("Change port by: [Port]");
+					return;
+				}
+				port = Integer.valueOf(arg[3]);
+				System.out.println("ServerPort Changed: " + arg[3]);
+			}
+
+			Server server = new Server(new ServerManager(abtName, abtID, port));
+
+			StartUp.startThread(server);
+		} else {
+			System.out.println(" -s [Abteilungs-Name] [Abteilungs-ID 10-9999] [Port] : Starting the Server");
 		}
-
-		Server server = new Server(serverManager);
-
-		StartUp.startThread(server);
 	}
 
 	/**

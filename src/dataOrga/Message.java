@@ -53,13 +53,13 @@ public class Message {
 		String tmp = this.id + split + this.text + split + this.username + split + this.abteilung + split
 				+ this.lastchange;
 		tmp.replaceAll("\n", enter);
-		//System.err.println(tmp);
+		// System.err.println(tmp);
 		return tmp;
 	}
 
 	public static Message stringToMessage(String msg) {
 
-		//System.err.println(msg);
+		// System.err.println(msg);
 		msg.replaceAll(enter, "\n");
 
 		String[] tmp = msg.split(split);
@@ -74,9 +74,9 @@ public class Message {
 
 	public void sendMessage(PrintWriter out) {
 		String msgString = this.toString();
-		
+
 		out.println(msgString.length());
-		
+
 		System.err.println(msgString.length());
 
 		for (char c : msgString.toCharArray()) {
@@ -98,6 +98,10 @@ public class Message {
 		in.readLine();
 
 		return msg;
+	}
+
+	public void setAbteilung(String abteilungsName) {
+		this.abteilung = abteilungsName;
 	}
 
 }

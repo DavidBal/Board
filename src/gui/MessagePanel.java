@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -33,17 +34,25 @@ public class MessagePanel extends JPanel {
 		this.create();
 	}
 
+	// TODO Panel with Message ID, Abt and Owner
 	private void create() {
 
 		this.setLayout(new FlowLayout());
 
-		JPanel button1 = new JPanel();
-		button1.setLayout(new BoxLayout(button1, BoxLayout.Y_AXIS));
-
-		JTextArea msg = new JTextArea(this.message.getText(), 4, 40);
+		JTextArea msg = new JTextArea(this.message.getText(), 6, 40);
 		msg.setLineWrap(true);
 		msg.setEditable(false);
 
+		this.add(new JScrollPane(msg));
+		this.add(createButtonPanel());
+		this.add(createInfoPanel());
+
+		this.repaint();
+	}
+
+	private JPanel createButtonPanel() {
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		JButton edit = new JButton("Edit");
 		edit.addMouseListener(
 				new EditMessageEvent(this.manager.getUpdaterThread().getBuffer(), message, this.manager.getUser()));
@@ -66,12 +75,24 @@ public class MessagePanel extends JPanel {
 
 		edit.setSize(delete.getSize());
 		push.setSize(delete.getSize());
-		this.add(new JScrollPane(msg));
-		button1.add(edit);
-		button1.add(delete);
-		this.add(button1);
-		this.add(push);
-		this.repaint();
+
+		buttonPanel.add(edit);
+		buttonPanel.add(delete);
+		buttonPanel.add(push);
+
+		return buttonPanel;
+	}
+
+	private JPanel createInfoPanel() {
+		JPanel infoPanel = new JPanel();
+
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+		infoPanel.add(new JLabel(this.message.getUsername()));
+		infoPanel.add(new JLabel(this.message.getAbteilung()));
+		infoPanel.add(new JLabel(String.valueOf(this.message.getId())));
+
+		return infoPanel;
 	}
 
 	private class DeleteMessage extends MouseAdapter {
