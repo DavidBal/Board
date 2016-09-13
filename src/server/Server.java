@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import config.ServerManager;
 
+//TODO NAME !! WICHTIG !!
 
 public class Server extends Thread {
 

@@ -17,11 +17,9 @@ import dataOrga.User;
 //TODO Client kann server Daten abfragen
 public class ServerConector {
 
-	private String name;
+	private String abteilungsName;
 	private int serverPort;
 	private InetAddress serverIP;
-
-	public boolean ereichbar = false;
 
 	private Socket socket;
 
@@ -29,7 +27,7 @@ public class ServerConector {
 	private PrintWriter out;
 
 	public String getName() {
-		return name;
+		return abteilungsName;
 	}
 
 	public int getServerPort() {
@@ -47,15 +45,9 @@ public class ServerConector {
 	 * @throws UnknownHostException
 	 */
 	public ServerConector(String serverIP, int serverPort) throws UnknownHostException {
-
 		this.serverIP = InetAddress.getByName(serverIP);
-
 		this.serverPort = serverPort;
-
-		this.ereichbar = true;
-
-		this.name = "";
-
+		this.abteilungsName = "";
 	}
 
 	/**
@@ -65,14 +57,14 @@ public class ServerConector {
 	 * @param name
 	 * @throws UnknownHostException
 	 */
-	public ServerConector(String serverIP, int serverPort, String name) throws UnknownHostException {
+	public ServerConector(String serverIP, int serverPort, String abteilungsName) throws UnknownHostException {
 		this.serverIP = InetAddress.getByName(serverIP);
 		this.serverPort = serverPort;
-		this.name = name;
+		this.abteilungsName = abteilungsName;
 	}
 
 	/**
-	 * Connecting to the Server If everything goes right connected = TRUE
+	 * Connecting to the Server 
 	 * 
 	 */
 	public void connect() throws IOException {
@@ -81,10 +73,10 @@ public class ServerConector {
 		this.socket = new Socket(this.serverIP, serverPort);
 		this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		this.out = new PrintWriter(socket.getOutputStream(), true);
-
 	}
 
 	/**
+	 * Disconnect 
 	 * @throws IOException
 	 * 
 	 */
@@ -118,22 +110,20 @@ public class ServerConector {
 	}
 
 	/**
-	 * Sendet eine Nachricht an den Server.
+	 * Sendet eine neue Nachricht an den Server.
 	 * 
 	 * @param msg
 	 * @throws ConnectException
 	 */
 	protected void sendNewMessage(Message msg) throws IOException {
+		
+		//TODO Erfolgreich?
+		
 		this.connect();
 
 		this.out.println(dataOrga.ControllCalls.NEWMESSAGE);
-		System.err.println(dataOrga.ControllCalls.NEWMESSAGE);
-
 		msg.sendMessage(out);
-
-		//
 		this.out.println(dataOrga.ControllCalls.END);
-		System.err.println(dataOrga.ControllCalls.END);
 
 		this.disconnect();
 	}
@@ -154,14 +144,8 @@ public class ServerConector {
 		this.out.println(ControllCalls.DELETEMSG.toString());
 		msg.sendMessage(out);
 
-		try {
-			loeschen_erfolgreich = Boolean.valueOf(this.in.readLine());
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		loeschen_erfolgreich = Boolean.valueOf(this.in.readLine());
+		
 		return loeschen_erfolgreich;
 	}
 
@@ -174,32 +158,31 @@ public class ServerConector {
 	protected void update(ClientManager manager) throws IOException {
 		this.connect();
 
+		int marker = 1000000;
+
 		manager.deleteAllMessage(); // TODO Besser
 
 		this.out.println(dataOrga.ControllCalls.UPDATE);
 
 		String input;
 
-		try {
-			in.mark(1000000);
-			input = in.readLine();
+		in.mark(marker);
+		input = in.readLine();
 
-			while (!input.equals(dataOrga.ControllCalls.END.toString())) {
-				in.reset();
-				manager.addMessage(Message.stringToMessage(Message.getMessage(in)));
-				in.mark(1000000);
-				input = in.readLine();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		while (!input.equals(dataOrga.ControllCalls.END.toString())) {
+			in.reset();
+			manager.addMessage(Message.stringToMessage(Message.getMessage(in)));
+			in.mark(marker);
+			input = in.readLine();
 		}
+
 		this.disconnect();
 	}
 
 	/**
-	 * @throws ConnectException
-	 * 
+	 * Überträgt den Namen und das Passwort und bekommt die Berechtigung zurück; Berchtigung Null wenn der User nicht exestiert
+	 * @param user
+	 * @throws IOException
 	 */
 	public void identifyUser(User user) throws IOException {
 		this.connect();
@@ -209,14 +192,17 @@ public class ServerConector {
 		this.out.println(user.getPw());
 		this.out.println(dataOrga.ControllCalls.END);
 
-		try {
-			user.setBerechtigung(Integer.valueOf(this.in.readLine()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		user.setBerechtigung(Integer.valueOf(this.in.readLine()));
+
 		this.disconnect();
 	}
 
+	/**
+	 * Übrtägt die Daten einen Users der neu angelegt werden soll.
+	 * @param user
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean addUser(User user) throws IOException {
 		boolean anlegen_erfolgreich = false;
 
@@ -227,14 +213,8 @@ public class ServerConector {
 		this.out.println(user.getPw());
 		this.out.println(user.getBerechtigung());
 
-		try {
-			String s = this.in.readLine();
-			anlegen_erfolgreich = Boolean.valueOf(s);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String s = this.in.readLine();
+		anlegen_erfolgreich = Boolean.valueOf(s);
 
 		this.disconnect();
 		return anlegen_erfolgreich;
@@ -242,7 +222,7 @@ public class ServerConector {
 
 	@Override
 	public String toString() {
-		String tmp = this.name + ":" + this.serverIP.getHostName() + ":" + this.serverPort;
+		String tmp = this.abteilungsName + ":" + this.serverIP.getHostName() + ":" + this.serverPort;
 		return tmp;
 	}
 
@@ -250,7 +230,7 @@ public class ServerConector {
 	public boolean equals(Object o) {
 		if (o instanceof ServerConector) {
 			ServerConector other = (ServerConector) o;
-			if (this.name.equals(other.name)) {
+			if (this.abteilungsName.equals(other.abteilungsName)) {
 				if (this.serverIP.equals(other.serverIP)) {
 					if (this.serverPort == other.serverPort) {
 						return true;

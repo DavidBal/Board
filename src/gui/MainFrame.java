@@ -64,6 +64,10 @@ public class MainFrame extends JFrame {
 		// TODO ActionListener
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		for(Message msg : this.manager.getMessages()){
+			this.addMessage(msg);
+		}
 
 		this.repaint();
 		this.pack();
@@ -114,6 +118,5 @@ public class MainFrame extends JFrame {
 			MessageNewAndEditFrame tmp = new MessageNewAndEditFrame(buffer, user);
 			tmp.setVisible(true);
 		}
-
 	}
 }

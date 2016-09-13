@@ -16,7 +16,7 @@ public class UpdaterThread extends Thread {
 	 */
 	private static final long UPDATE_INTERVALL = 150000;
 	private long updateIntervallMod = 1;
-	public boolean exit;
+	private boolean exit;
 
 	private SendeBuffer buffer;
 
@@ -31,10 +31,7 @@ public class UpdaterThread extends Thread {
 	 */
 	@Override
 	public void run() {
-
 		update();
-
-		this.exit = false;
 	}
 
 	/**
@@ -54,8 +51,7 @@ public class UpdaterThread extends Thread {
 	 * 
 	 */
 	private synchronized void update() {
-		while (true) {
-
+		while (this.exit == false) {
 			try {
 				this.sendBuffer();
 
@@ -71,9 +67,6 @@ public class UpdaterThread extends Thread {
 				this.wait(UPDATE_INTERVALL * this.updateIntervallMod);
 			} catch (InterruptedException e) {
 			}
-			if (this.exit) {
-				return;
-			}
 		}
 	}
 
@@ -85,7 +78,7 @@ public class UpdaterThread extends Thread {
 				this.manager.getServerConector().sendNewMessage(tmp.getKey());
 				break;
 			case EDITMESSAGE:
-				// TODO
+				// TODO 
 				this.manager.getServerConector().deleteMessage(tmp.getKey());
 				this.manager.getServerConector().sendNewMessage(tmp.getKey());
 				break;

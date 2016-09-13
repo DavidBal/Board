@@ -27,6 +27,21 @@ public class WorkerThread extends Thread {
 
 	ServerManager manager;
 
+	public WorkerThread(Socket client, int id, ServerManager manager) {
+		this.client = client;
+		this.id = id;
+		this.manager = manager;
+	
+		this.setName("WorkerThread" + this.id);
+	
+		try {
+			this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			this.out = new PrintWriter(client.getOutputStream(), true);
+		} catch (IOException e) {
+			e.printStackTrace(); //TODO
+		}
+	}
+
 	@Override
 	public void run() {
 
@@ -45,8 +60,7 @@ public class WorkerThread extends Thread {
 			client.close();
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace(); //TODO
 		}
 
 		manager.onFinish();
@@ -55,31 +69,7 @@ public class WorkerThread extends Thread {
 			System.out.println("Worker - " + this.id + " END!!");
 	}
 
-	WorkerThread(Socket client, int id, ServerManager manager) {
-		this.client = client;
-		this.id = id;
-		this.manager = manager;
-
-		this.setName("WorkerThread" + this.id);
-
-		try {
-			this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			this.out = new PrintWriter(client.getOutputStream(), true);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	private void controll(String controllCall) {
-
-		/**
-		 * 
-		 */
-		/**
-		 * TODO ------ * CC -> One Line Every Msg -> one Line END -> One Line
-		 */
-
 		switch (ControllCalls.stringToControllCall(controllCall)) {
 		case Ping:
 			this.out.println("Pong");

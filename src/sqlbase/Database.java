@@ -14,6 +14,8 @@ import dataOrga.Message;
 import dataOrga.User;
 
 //TODO PUSH 
+//TODO ID jeder Abteilung brauch eigene.
+//TODO Jede Abteilung eigene DatenBank
 
 public class Database {
 	private Connection conn = null;
@@ -89,6 +91,7 @@ public class Database {
 
 			String query = "SELECT USERNAME from LOGIN";
 
+			//Überprüft ob Username schon Vergeben
 			PreparedStatement output = conn.prepareStatement(query);
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
@@ -98,6 +101,7 @@ public class Database {
 				}
 			}
 
+			//Falls nicht neuer user anlegen
 			if (free == true) {
 				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG)" + "VALUES(" + this.getID("LOGIN")
 						+ ", '" + user.getName() + "' , '" + user.getPw() + "' , '" + user.getBerechtigung().getInteger() + "' );";
@@ -106,6 +110,7 @@ public class Database {
 				Database.id++;
 				return free;
 			} else {
+				//Falls vergeben nichts tun
 				return free;
 			}
 		} catch (SQLException e) {
@@ -285,7 +290,7 @@ public class Database {
 	}
 	
 	/**
-	 * 
+	 * Gibt eine Liste aller bekannten Benutzer Zurück.
 	 * @return
 	 */
 	public ArrayList<User> loadUser(){
@@ -303,6 +308,11 @@ public class Database {
 		return users;
 	}
 
+	/**TODO Server eigene ID
+	 * Sucht die größte frei ID 
+	 * @param table
+	 * @return
+	 */
 	private int getID(String table) {
 		int id = 0;
 		int tmp = 0;
