@@ -3,6 +3,7 @@ package dataOrga;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Calendar;
 
 public class Message {
 
@@ -31,21 +32,25 @@ public class Message {
 		return abteilung;
 	}
 
-	public int getLastchange() {
+	public long getLastchange() {
 		return lastchange;
 	}
 
 	String text;
 	String username;
 	String abteilung;
-	int lastchange;
+	long lastchange;
 
-	public Message(int id, String text, String username, String abteilung, int lastchange) {
+	public Message(int id, String text, String username, String abteilung, long lastchange) {
 		this.id = id;
 		this.text = text;
 		this.username = username;
 		this.abteilung = abteilung;
-		this.lastchange = lastchange;
+		if (lastchange == 0) {
+			this.lastchange = this.createTimeStamp();
+		} else {
+			this.lastchange = lastchange;
+		}
 	}
 
 	public String toString() {
@@ -64,7 +69,7 @@ public class Message {
 
 		String[] tmp = msg.split(split);
 
-		return new Message(Integer.valueOf(tmp[0]), tmp[1], tmp[2], tmp[3], Integer.valueOf(tmp[4]));
+		return new Message(Integer.valueOf(tmp[0]), tmp[1], tmp[2], tmp[3], Long.valueOf(tmp[4]));
 	}
 
 	public void changeText(String text) {
@@ -102,6 +107,22 @@ public class Message {
 
 	public void setAbteilung(String abteilungsName) {
 		this.abteilung = abteilungsName;
+	}
+
+	private long createTimeStamp() {
+		long timeInt = 0;
+
+		Calendar cal = Calendar.getInstance();
+		timeInt = cal.get(Calendar.YEAR);
+		timeInt = timeInt * 100 + cal.get(Calendar.MONTH);
+		timeInt = timeInt * 100 + cal.get(Calendar.DAY_OF_MONTH);
+		timeInt = timeInt * 100 + cal.get(Calendar.HOUR_OF_DAY);
+		timeInt = timeInt * 100 + cal.get(Calendar.MINUTE);
+		timeInt = timeInt * 100 + cal.get(Calendar.SECOND);
+
+		System.out.println(" .- " + timeInt);
+
+		return timeInt;
 	}
 
 }

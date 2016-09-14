@@ -56,6 +56,8 @@ public class UpdaterThread extends Thread {
 				this.sendBuffer();
 
 				this.manager.getServerConector().update(this.manager);
+
+				this.updateUI();
 			} catch (IOException e1) {
 				System.out.println("Übertragung nicht möglich");
 				if (manager.getMainFrame() != null) {
@@ -70,7 +72,7 @@ public class UpdaterThread extends Thread {
 		}
 	}
 
-	private void sendBuffer() throws IOException {
+	private synchronized void sendBuffer() throws IOException {
 		while (buffer.getMessage() != null) {
 			Pair<Message, ControllCalls> tmp = buffer.getMessage();
 			switch (tmp.getValue()) {
@@ -78,7 +80,7 @@ public class UpdaterThread extends Thread {
 				this.manager.getServerConector().sendNewMessage(tmp.getKey());
 				break;
 			case EDITMESSAGE:
-				// TODO 
+				// TODO
 				this.manager.getServerConector().deleteMessage(tmp.getKey());
 				this.manager.getServerConector().sendNewMessage(tmp.getKey());
 				break;
@@ -89,6 +91,15 @@ public class UpdaterThread extends Thread {
 				break;
 			}
 			buffer.removeMessageFromBuffer(tmp.getKey());
+		}
+	}
+
+	private synchronized void updateUI() {
+		if (this.manager.getMainFrame() != null) {
+			this.manager.getMainFrame().removeAllMessagePanel();
+			for (Message msg : this.manager.getMessages()) {
+				this.manager.getMainFrame().addMessage(msg);
+			}
 		}
 	}
 

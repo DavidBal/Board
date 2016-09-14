@@ -64,7 +64,7 @@ public class Database {
 
 			sql = "CREATE TABLE IF NOT EXISTS NACHRICHT " + "(ID INT PRIMARY KEY NOT NULL,"
 					+ " NACHRICHT TEXT NOT NULL, " + " ABTEILUNG TEXT NOT NULL ," + " USERNAME INT NOT NULL, "
-					+ " LASTCHANGE INT NOT NULL );";
+					+ " LASTCHANGE LONG NOT NULL );";
 
 			stmt.executeUpdate(sql);
 			stmt.close();
@@ -288,7 +288,7 @@ public class Database {
 			while (rs.next()) {
 				msgs.add(new Message(Integer.valueOf(rs.getString("ID")), rs.getString("NACHRICHT"),
 						rs.getString("USERNAME"), rs.getString("ABTEILUNG"),
-						Integer.valueOf(rs.getString("LASTCHANGE"))));
+						Long.valueOf(rs.getString("LASTCHANGE"))));
 
 			}
 		} catch (SQLException e) {

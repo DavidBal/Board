@@ -68,21 +68,23 @@ public class ClientManager {
 		this.mainFrame = mf;
 	}
 
-	private ArrayList<Message> Messages;
+	private MessageList messages;
 
 	public ArrayList<Message> getMessages() {
-		return this.Messages;
+		return this.messages.getMessages();
 	}
 
 	public void addMessage(Message msg) {
-		this.Messages.add(msg);
-		if (this.mainFrame != null) {
-			mainFrame.addMessage(msg);
+		Message oldMsg = this.messages.findMessage(msg);
+		if (oldMsg == null) {
+			this.messages.addMessage(msg);
+		} else {
+			oldMsg.changeText(msg.getText());
 		}
 	}
 
 	public void deleteAllMessage() {
-		this.Messages.clear();
+		this.messages.deleteAllMessage();
 		if (this.mainFrame != null) {
 			mainFrame.removeAllMessagePanel();
 		}
@@ -94,7 +96,7 @@ public class ClientManager {
 	public ClientManager() {
 		this.readInServer();
 
-		this.Messages = new ArrayList<Message>();
+		this.messages = new MessageList();
 		this.mainFrame = null;
 	}
 

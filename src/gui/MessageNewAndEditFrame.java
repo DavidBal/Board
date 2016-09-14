@@ -91,7 +91,7 @@ public class MessageNewAndEditFrame extends JFrame {
 			System.out.println("END");
 
 			if (msg == null) {
-				buffer.addNewMessage(new Message(-1, msgText.getText(), user.getName(), "Unknown", 1));
+				buffer.addNewMessage(new Message(-1, msgText.getText(), user.getName(), "Unknown", 0));
 			} else {
 				msg.changeText(msgText.getText());
 				buffer.addEditMessage(msg);

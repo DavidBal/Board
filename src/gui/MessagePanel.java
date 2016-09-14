@@ -91,6 +91,7 @@ public class MessagePanel extends JPanel {
 		infoPanel.add(new JLabel(this.message.getUsername()));
 		infoPanel.add(new JLabel(this.message.getAbteilung()));
 		infoPanel.add(new JLabel(String.valueOf(this.message.getId())));
+		infoPanel.add(new JLabel(String.valueOf(this.message.getLastchange())));
 
 		return infoPanel;
 	}
