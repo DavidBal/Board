@@ -32,7 +32,7 @@ public class UserPanel extends JPanel {
 		this.name.setPreferredSize(new Dimension(100, 10));
 		this.name.setToolTipText("Benutzername");
 
-		this.id = new JLabel(this.user.id() + "");
+		this.id = new JLabel(this.user.getId() + "");
 		this.id.setPreferredSize(new Dimension(100, 10));
 		this.id.setToolTipText("Benutzer ID");
 
@@ -52,7 +52,7 @@ public class UserPanel extends JPanel {
 	 */
 	public void update() {
 		this.name.setText(this.user.getName());
-		this.id.setText(this.user.id() + "");
+		this.id.setText(this.user.getId() + "");
 		this.berechtigung.setText(this.user.getBerechtigung().toString());
 
 		this.repaint();

@@ -9,7 +9,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import config.ClientManager;
 import dataOrga.ControllCalls;
 import dataOrga.Message;
 import dataOrga.User;
@@ -61,8 +60,7 @@ public class ServerConector {
 	 * @throws UnknownHostException
 	 */
 	public ServerConector(String serverIP, int serverPort, String abteilungsName) throws UnknownHostException {
-		this.serverIP = InetAddress.getByName(serverIP);
-		this.serverPort = serverPort;
+		this(serverIP, serverPort);
 		this.abteilungsName = abteilungsName;
 	}
 
@@ -161,13 +159,12 @@ public class ServerConector {
 	 */
 	protected void update(MessageSaver messageSaver) throws IOException {
 		this.connect();
-		String senderInfo = "";
 
 		int marker = 1000000;
 
 		this.out.println(dataOrga.ControllCalls.UPDATE);
 
-		messageSaver.deleteAllMessage(this.abteilungsName); // TODO Besser
+		messageSaver.deleteAllMessage(); // TODO Besser
 
 		String input;
 

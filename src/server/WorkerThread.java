@@ -78,7 +78,7 @@ public class WorkerThread extends Thread {
 			try {
 				String msg = Message.getMessage(in);
 
-				this.manager.database.addMessage(Message.stringToMessage(msg));
+				this.manager.getDatabase().addMessage(Message.stringToMessage(msg));
 				this.in.readLine();
 				// TODO END ??
 			} catch (IOException e) {
@@ -95,14 +95,14 @@ public class WorkerThread extends Thread {
 				String passwort = this.in.readLine();
 
 				//
-				this.out.println(this.manager.database.getUserBerechtigung(new User(userName, passwort, 0, 0)));
+				this.out.println(this.manager.getDatabase().getUserBerechtigung(new User(userName, passwort, 0, 0)));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
 		case UPDATE:
-			ArrayList<Message> msgs = this.manager.database.loadMessages(0);
+			ArrayList<Message> msgs = this.manager.getDatabase().loadMessages(0);
 			for (Message msg : msgs) {
 				msg.sendMessage(out);
 			}
@@ -117,7 +117,7 @@ public class WorkerThread extends Thread {
 				String berechtigung = in.readLine();
 				User user = new User(name, pw, Integer.valueOf(berechtigung));
 
-				boolean anlegen_erfolgreich = manager.database.addUser(user);
+				boolean anlegen_erfolgreich = manager.getDatabase().addUser(user);
 
 				this.out.println(anlegen_erfolgreich);
 
@@ -131,7 +131,7 @@ public class WorkerThread extends Thread {
 			try {
 
 				Message msg = Message.stringToMessage(Message.getMessage(in));
-				boolean loeschen_erfolgreich = this.manager.database.deleteMessage(msg);
+				boolean loeschen_erfolgreich = this.manager.getDatabase().deleteMessage(msg);
 				this.out.println(loeschen_erfolgreich);
 
 			} catch (IOException e) {

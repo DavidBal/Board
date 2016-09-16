@@ -13,9 +13,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import config.ClientManager;
+import dataOrga.Berechtigung;
 import dataOrga.Message;
 import dataOrga.User;
-import dataOrga.User.Berechtigung;
 import update.SendeBuffer;
 
 public class MessagePanel extends JPanel {

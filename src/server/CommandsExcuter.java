@@ -1,11 +1,13 @@
 package server;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Scanner;
 
 import config.ServerManager;
 import dataOrga.User;
+import update.ServerConector;
 
 //TODO Close server save with all workerthreads done
 //TODO Delete User, edit there "Berechtigung"
@@ -32,8 +34,9 @@ public class CommandsExcuter extends Thread {
 
 	private enum Commands {
 		help("Shows All Commnads"), show("Show a List of Connections"), fail("fail passing"), add(
-				"add a user"), listuser(
-						"Shows a list of all Users"), deleteOverMsg("Delete all Messages from over Departments");
+				"add a user"), listuser("Shows a list of all Users"), deleteOverMsg(
+						"Delete all Messages from over Departments"), setTopServer(
+								"Set a Server to that this server send Messages");
 
 		String info;
 
@@ -54,7 +57,8 @@ public class CommandsExcuter extends Thread {
 		this.manager = manager;
 		this.server = server;
 		this.reader = new Scanner(System.in);
-		usable = EnumSet.of(Commands.help, Commands.show, Commands.add, Commands.listuser, Commands.deleteOverMsg);
+		usable = EnumSet.of(Commands.help, Commands.show, Commands.add, Commands.listuser, Commands.deleteOverMsg,
+				Commands.setTopServer);
 		this.setName("ServerCommandExecuter");
 	}
 
@@ -98,18 +102,33 @@ public class CommandsExcuter extends Thread {
 			println("Berechtigung: ");
 			int berechtigung = Integer.valueOf(scanner.nextLine());
 			User user = new User(name, pw, berechtigung);
-			manager.database.addUser(user);
+			manager.getDatabase().addUser(user);
 			break;
 		case listuser:
 			println("UserList:");
-			ArrayList<User> users = manager.database.loadUser();
-			for(User u : users){
+			ArrayList<User> users = manager.getDatabase().loadUser();
+			for (User u : users) {
 				println(u.toString());
 			}
 			break;
 		case deleteOverMsg:
-			manager.database.deleteAllMessage("");
+			manager.getDatabase().deleteAllMessage();
 			println("All Messages from other Deapartments have been deleted");
+			break;
+		case setTopServer:
+			println("Set Top Level Server!");
+
+			println("Server-Ip:");
+			String serverIp = scanner.nextLine();
+			println("Port:");
+			String serverPort = scanner.nextLine();
+
+			try {
+				manager.setServerConector(new ServerConector(serverIp, Integer.valueOf(serverPort)));
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		default:
 			println("Use Command: " + Commands.help + " - " + Commands.help.info);

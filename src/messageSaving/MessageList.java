@@ -31,7 +31,7 @@ public class MessageList implements MessageSaver {
 	/**
 	 * Löscht alle Nachrichten
 	 */
-	public synchronized void deleteAllMessage(String info) {
+	public synchronized void deleteAllMessage() {
 		synchronized (messageList) {
 			this.messageList.clear();
 		}

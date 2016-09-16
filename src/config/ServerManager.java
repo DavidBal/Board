@@ -1,8 +1,10 @@
 package config;
 
 import messageSaving.Database;
+import update.ServerConector;
+import update.UpdaterThread;
 
-public class ServerManager implements Manager{
+public class ServerManager implements Manager {
 
 	private int serverPort = 4690;
 
@@ -22,7 +24,31 @@ public class ServerManager implements Manager{
 
 	private int acticConnects;
 	private int finishConnects;
-	public Database database;
+	private Database database;
+
+	public Database getDatabase() {
+		return database;
+	}
+
+	private ServerConector serverConector;
+
+	public ServerConector getServerConector() {
+		return serverConector;
+	}
+
+	public void setServerConector(ServerConector serverConector) {
+		if (this.serverConector != null) {
+			this.updater.exitUpdater();
+		}
+		this.serverConector = serverConector;
+		this.startUpdater();
+	}
+
+	private UpdaterThread updater;
+
+	public UpdaterThread getUpdater() {
+		return updater;
+	}
 
 	public ServerManager(String abteilungsName, int abteilungsID, int serverPort) throws Exception {
 		if (abteilungsID < 10 || 9999 < abteilungsID) {
@@ -39,6 +65,15 @@ public class ServerManager implements Manager{
 		}
 
 		this.database = new Database(this.abteilungsName, this.abteilungsID);
+
+		this.serverConector = null;
+	}
+
+	public ServerManager(String abteilungsName, int abteilungsID, int serverPort, ServerConector serverConector)
+			throws Exception {
+		this(abteilungsName, abteilungsID, serverPort);
+		this.serverConector = serverConector;
+		this.startUpdater();
 	}
 
 	public synchronized void onConnect() {
@@ -72,5 +107,12 @@ public class ServerManager implements Manager{
 
 	public void setAbteilungsID(int abteilungsID) {
 		this.abteilungsID = abteilungsID;
+	}
+
+	public void startUpdater() {
+		if (serverConector != null) {
+			updater = new UpdaterThread(serverConector, this.database);
+			updater.run();
+		}
 	}
 }

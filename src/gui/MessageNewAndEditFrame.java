@@ -28,8 +28,9 @@ public class MessageNewAndEditFrame extends JFrame {
 
 	public MessageNewAndEditFrame(SendeBuffer buffer, User user, Message message) {
 		this.buffer = buffer;
-		this.message = message;
 		this.user = user;
+		this.message = message;
+
 		this.create();
 	}
 

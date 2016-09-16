@@ -10,7 +10,7 @@ public interface MessageSaver {
 
 	public boolean deleteMessage(Message msg);
 
-	public void deleteAllMessage(String info);
+	public void deleteAllMessage();
 	
 	public ArrayList<Message> getAllMessages();
 

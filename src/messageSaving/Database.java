@@ -106,9 +106,9 @@ public class Database implements MessageSaver {
 
 			// Falls nicht neuer user anlegen
 			if (free == true) {
-				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG, PUSH)" + "VALUES("
+				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG)" + "VALUES("
 						+ this.getID("LOGIN") + ", '" + user.getName() + "' , '" + user.getPw() + "' , '"
-						+ user.getBerechtigung().getInteger() + "' , '" + Boolean.toString(false) + "' );";
+						+ user.getBerechtigung().getInteger() + "');";
 				stmt.executeUpdate(sql);
 				stmt.close();
 
@@ -367,7 +367,7 @@ public class Database implements MessageSaver {
 				}
 				id += 1;
 			}
-
+			return id * this.multipikator + this.abtID;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -379,7 +379,7 @@ public class Database implements MessageSaver {
 	/**
 	 * This function does nothing at the momentn
 	 */
-	public void deleteAllMessage(String info) {
+	public void deleteAllMessage() {
 		try {
 			String del = "delete from NACHRICHT where ABTEILUNG != '" + this.abteilungsName + "';";
 			PreparedStatement delete;

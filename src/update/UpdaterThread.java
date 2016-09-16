@@ -38,24 +38,6 @@ public class UpdaterThread extends Thread {
 	}
 
 	/**
-	 * Client
-	 * 
-	 * @param serverConector
-	 * @param messageSaver
-	 * @param mainFrame
-	 */
-	public UpdaterThread(ServerConector serverConector, MessageSaver messageSaver, MainFrame mainFrame) {
-		this.setName("UpdaterThread");
-		this.exit = false;
-		this.buffer = new SendeBuffer(this);
-		this.serverConector = serverConector;
-		this.messageSaver = messageSaver;
-
-		// Client Spezifisch
-		this.mainFrame = mainFrame;
-	}
-
-	/**
 	 * Server
 	 * 
 	 * @param serverConector
@@ -67,9 +49,23 @@ public class UpdaterThread extends Thread {
 		this.buffer = new SendeBuffer(this);
 		this.serverConector = serverConector;
 		this.messageSaver = messageSaver;
-
+	
 		// Client Spezifisch
 		this.mainFrame = null;
+	}
+
+	/**
+	 * Client
+	 * 
+	 * @param serverConector
+	 * @param messageSaver
+	 * @param mainFrame
+	 */
+	public UpdaterThread(ServerConector serverConector, MessageSaver messageSaver, MainFrame mainFrame) {
+		this(serverConector, messageSaver);
+
+		// Client Spezifisch
+		this.mainFrame = mainFrame;
 	}
 
 	/**
