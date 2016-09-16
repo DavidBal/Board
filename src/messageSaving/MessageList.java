@@ -1,15 +1,15 @@
-package config;
+package messageSaving;
 
 import java.util.ArrayList;
 
 import dataOrga.Message;
 
-public class MessageList {
+public class MessageList implements MessageSaver {
 
-	private ArrayList<Message> Messages;
+	private ArrayList<Message> messageList;
 
 	public MessageList() {
-		this.Messages = new ArrayList<Message>();
+		this.messageList = new ArrayList<Message>();
 	}
 
 	/**
@@ -18,27 +18,33 @@ public class MessageList {
 	 * @param msg
 	 */
 	public synchronized void addMessage(Message msg) {
-		synchronized (Messages) {
-			this.Messages.add(msg);
+		synchronized (messageList) {
+			Message oldMsg = this.findMessage(msg);
+			if (oldMsg == null) {
+				messageList.add(msg);
+			} else {
+				oldMsg.changeText(msg.getText());
+			}
 		}
 	}
 
 	/**
 	 * Löscht alle Nachrichten
 	 */
-	public synchronized void deleteAllMessage() {
-		synchronized (Messages) {
-			this.Messages.clear();
+	public synchronized void deleteAllMessage(String info) {
+		synchronized (messageList) {
+			this.messageList.clear();
 		}
 	}
 
 	/**
 	 * Get the raw list.
+	 * 
 	 * @return
 	 */
-	public synchronized ArrayList<Message> getMessages() {
-		synchronized (Messages) {
-			return Messages;
+	public synchronized ArrayList<Message> getAllMessages() {
+		synchronized (messageList) {
+			return messageList;
 		}
 	}
 
@@ -50,8 +56,8 @@ public class MessageList {
 	 * 
 	 */
 	public synchronized Message findID(int id) {
-		synchronized (Messages) {
-			for (Message msg : this.Messages) {
+		synchronized (messageList) {
+			for (Message msg : this.messageList) {
 				if (msg.getId() == id) {
 					return msg;
 				}
@@ -61,7 +67,7 @@ public class MessageList {
 	}
 
 	public synchronized Message findMessage(Message msg) {
-		synchronized (Messages) {
+		synchronized (messageList) {
 			this.findID(msg.getId());
 			return null;
 		}
@@ -74,11 +80,9 @@ public class MessageList {
 	 * @return
 	 */
 	public synchronized boolean deleteMessage(Message msg) {
-		synchronized (Messages) {
-			return this.Messages.remove(msg);
+		synchronized (messageList) {
+			return this.messageList.remove(msg);
 		}
 	}
-	
-	
 
 }

@@ -1,6 +1,6 @@
 package config;
 
-import sqlbase.Database;
+import messageSaving.Database;
 
 public class ServerManager implements Manager{
 
