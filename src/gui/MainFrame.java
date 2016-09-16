@@ -66,7 +66,7 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		for(Message msg : this.manager.getMessages()){
-			this.addMessageFrame(msg);
+			this.addMessage(msg);
 		}
 
 		this.repaint();
@@ -74,7 +74,7 @@ public class MainFrame extends JFrame {
 
 	}
 
-	public void addMessageFrame(Message msg) {
+	public void addMessage(Message msg) {
 
 		System.out.println("Message Frame : " + msg.getText());
 

@@ -13,9 +13,8 @@ import config.ClientManager;
 import dataOrga.ControllCalls;
 import dataOrga.Message;
 import dataOrga.User;
-import messageSaving.MessageSaver;
 
-//DONE Client kann server Daten abfragen
+//TODO Client kann server Daten abfragen
 public class ServerConector {
 
 	private String abteilungsName;
@@ -159,15 +158,14 @@ public class ServerConector {
 	 * @param manager
 	 * @throws ConnectException
 	 */
-	protected void update(MessageSaver messageSaver) throws IOException {
+	protected void update(ClientManager manager) throws IOException {
 		this.connect();
-		String senderInfo = "";
 
 		int marker = 1000000;
 
-		this.out.println(dataOrga.ControllCalls.UPDATE);
+		manager.deleteAllMessage(); // TODO Besser
 
-		messageSaver.deleteAllMessage(this.abteilungsName); // TODO Besser
+		this.out.println(dataOrga.ControllCalls.UPDATE);
 
 		String input;
 
@@ -176,7 +174,7 @@ public class ServerConector {
 
 		while (!input.equals(dataOrga.ControllCalls.END.toString())) {
 			in.reset();
-			messageSaver.addMessage(Message.stringToMessage(Message.getMessage(in)));
+			manager.addMessage(Message.stringToMessage(Message.getMessage(in)));
 			in.mark(marker);
 			input = in.readLine();
 		}

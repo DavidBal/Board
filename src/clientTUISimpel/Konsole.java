@@ -11,10 +11,9 @@ import dataOrga.User;
 import update.ServerConector;
 
 /**
- * @deprecated
  * Implementiert auf Basis der Konsole einfache Testmoeglichkeiten des Clients!
  * 
- * 
+ * @author David
  *
  */
 public class Konsole {
