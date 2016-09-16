@@ -138,6 +138,12 @@ public class WorkerThread extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		case SERVER:
+			
+			this.out.println(this.manager.getAbteilungsName());
+			this.out.println(this.manager.getAbteilungsID());
+			
+			break;
 
 		default:
 			break;

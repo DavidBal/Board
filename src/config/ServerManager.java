@@ -2,7 +2,7 @@ package config;
 
 import sqlbase.Database;
 
-public class ServerManager {
+public class ServerManager implements Manager{
 
 	private int serverPort = 4690;
 

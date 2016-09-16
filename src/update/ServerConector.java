@@ -18,6 +18,7 @@ import dataOrga.User;
 public class ServerConector {
 
 	private String abteilungsName;
+	private int abtID;
 	private int serverPort;
 	private InetAddress serverIP;
 
@@ -47,7 +48,8 @@ public class ServerConector {
 	public ServerConector(String serverIP, int serverPort) throws UnknownHostException {
 		this.serverIP = InetAddress.getByName(serverIP);
 		this.serverPort = serverPort;
-		this.abteilungsName = "";
+		this.abteilungsName = "Unknown";
+		this.abtID = -1;
 	}
 
 	/**
@@ -64,7 +66,7 @@ public class ServerConector {
 	}
 
 	/**
-	 * Connecting to the Server 
+	 * Connecting to the Server
 	 * 
 	 */
 	public void connect() throws IOException {
@@ -76,7 +78,8 @@ public class ServerConector {
 	}
 
 	/**
-	 * Disconnect 
+	 * Disconnect
+	 * 
 	 * @throws IOException
 	 * 
 	 */
@@ -116,9 +119,9 @@ public class ServerConector {
 	 * @throws ConnectException
 	 */
 	protected void sendNewMessage(Message msg) throws IOException {
-		
-		//TODO Erfolgreich?
-		
+
+		// TODO Erfolgreich?
+
 		this.connect();
 
 		this.out.println(dataOrga.ControllCalls.NEWMESSAGE);
@@ -145,7 +148,7 @@ public class ServerConector {
 		msg.sendMessage(out);
 
 		loeschen_erfolgreich = Boolean.valueOf(this.in.readLine());
-		
+
 		return loeschen_erfolgreich;
 	}
 
@@ -180,7 +183,9 @@ public class ServerConector {
 	}
 
 	/**
-	 * Überträgt den Namen und das Passwort und bekommt die Berechtigung zurück; Berchtigung Null wenn der User nicht exestiert
+	 * Überträgt den Namen und das Passwort und bekommt die Berechtigung zurück;
+	 * Berchtigung Null wenn der User nicht exestiert
+	 * 
 	 * @param user
 	 * @throws IOException
 	 */
@@ -199,6 +204,7 @@ public class ServerConector {
 
 	/**
 	 * Übrtägt die Daten einen Users der neu angelegt werden soll.
+	 * 
 	 * @param user
 	 * @return
 	 * @throws IOException
@@ -239,6 +245,36 @@ public class ServerConector {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	public boolean callServerData() {
+		try {
+			this.connect();
+
+			this.out.println(ControllCalls.SERVER.toString());
+
+			this.abteilungsName = this.in.readLine();
+			this.abtID = Integer.valueOf(this.in.readLine());
+
+			this.disconnect();
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	public String getAbteilungsName() {
+		return abteilungsName;
+	}
+
+	public int getAbtID() {
+		return abtID;
 	}
 
 }

@@ -64,7 +64,7 @@ public class Database {
 
 			sql = "CREATE TABLE IF NOT EXISTS NACHRICHT " + "(ID INT PRIMARY KEY NOT NULL,"
 					+ " NACHRICHT TEXT NOT NULL, " + " ABTEILUNG TEXT NOT NULL ," + " USERNAME INT NOT NULL, "
-					+ " LASTCHANGE LONG NOT NULL );";
+					+ " LASTCHANGE LONG NOT NULL, PUSH TEXT NOT NULL );";
 
 			stmt.executeUpdate(sql);
 			stmt.close();
@@ -107,9 +107,9 @@ public class Database {
 
 			// Falls nicht neuer user anlegen
 			if (free == true) {
-				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG)" + "VALUES("
+				String sql = "INSERT INTO LOGIN (ID, USERNAME, PASSWORD, BERECHTIGUNG, PUSH)" + "VALUES("
 						+ this.getID("LOGIN") + ", '" + user.getName() + "' , '" + user.getPw() + "' , '"
-						+ user.getBerechtigung().getInteger() + "' );";
+						+ user.getBerechtigung().getInteger() + "' , '" + Boolean.toString(false) + "' );";
 				stmt.executeUpdate(sql);
 				stmt.close();
 
@@ -229,14 +229,14 @@ public class Database {
 			if (msg.getId() < 0) {
 				msg.setId(this.getID("NACHRICHT"));
 			}
-			
-			if (msg.getAbteilung().equals("Unknown")){
+
+			if (msg.getAbteilung().equals("Unknown")) {
 				msg.setAbteilung(this.abteilungsName);
 			}
 
-			String sql = "INSERT INTO NACHRICHT (ID,NACHRICHT,ABTEILUNG,USERNAME,LASTCHANGE)" + "VALUES(" + msg.getId()
-					+ ", '" + msg.getText() + "' , '" + msg.getAbteilung() + "' , '" + msg.getUsername() + "' , "
-					+ msg.getLastchange() + " );";
+			String sql = "INSERT INTO NACHRICHT (ID,NACHRICHT,ABTEILUNG,USERNAME,LASTCHANGE,PUSH)" + "VALUES("
+					+ msg.getId() + ", '" + msg.getText() + "' , '" + msg.getAbteilung() + "' , '" + msg.getUsername()
+					+ "' , " + msg.getLastchange() + " , '" + Boolean.toString(msg.getPush()) + "' );";
 
 			stmt.executeUpdate(sql);
 			stmt.close();
@@ -255,6 +255,15 @@ public class Database {
 	public boolean deleteMessage(Message msg) {
 		boolean loeschen_erfolgreich = true;
 		try {
+			String call = "Select * from NACHRICHT where ID = " + msg.getId() + " ;";
+			PreparedStatement output = conn.prepareStatement(call);
+			ResultSet rs = output.executeQuery();
+			boolean push = Boolean.valueOf(rs.getString("PUSH"));
+
+			if (push == true) {
+				// TODO send a delete at the top level Server
+			}
+
 			String del = "delete from NACHRICHT where ID = " + msg.getId() + ";";
 			PreparedStatement delete;
 			delete = conn.prepareStatement(del);
@@ -287,14 +296,12 @@ public class Database {
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
 				msgs.add(new Message(Integer.valueOf(rs.getString("ID")), rs.getString("NACHRICHT"),
-						rs.getString("USERNAME"), rs.getString("ABTEILUNG"),
-						Long.valueOf(rs.getString("LASTCHANGE"))));
+						rs.getString("USERNAME"), rs.getString("ABTEILUNG"), Long.valueOf(rs.getString("LASTCHANGE"))));
 
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 		return msgs;
 	}
 
@@ -325,27 +332,28 @@ public class Database {
 	 * @param table
 	 * @return
 	 */
-	private int getID(String table) {
-		int id = 0;
+	private Integer getID(String table) {
+		int id = 1; 
 		int tmp = 0;
-		String query = "SELECT ID from " + table;
+		String query = "SELECT ID from " + table + " ORDER BY ID";
 		try {
 			PreparedStatement output = conn.prepareStatement(query);
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
 				tmp = ((int) rs.getLong(1) - this.abtID) / this.multipikator;
-				if (tmp > id) {
-					id = tmp;
+				System.out.println("GET ID = " + tmp + " ; " + id);
+				if (tmp != id) {
+					System.out.println("Id = " + id);
+					return id * this.multipikator + this.abtID;
 				}
+				id += 1;
 			}
-			id += 1;
-			System.out.println("Id = " + id);
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return id * this.multipikator + this.abtID;
+		return null;
 	}
 
 }

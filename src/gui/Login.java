@@ -1,12 +1,14 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +30,7 @@ public class Login extends JFrame {
 	private ClientManager manager;
 	private JTextField name;
 	private JTextField passwort;
+	private JPanel serverChangePanel;
 
 	public Login(ClientManager manager) {
 		super();
@@ -47,11 +50,10 @@ public class Login extends JFrame {
 		JPanel loginZone = createUserLoginPanel();
 
 		// Server Change
-		JPanel changeServerZone = createServerChangePanel();
+		serverChangePanel = createServerChangePanel();
 
 		cp.add(loginZone);
-		cp.add(changeServerZone);
-
+		cp.add(serverChangePanel);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -83,16 +85,38 @@ public class Login extends JFrame {
 
 	private JPanel createServerChangePanel() {
 		JPanel changeServerZone = new JPanel();
-		changeServerZone.setLayout(new BorderLayout());
-		JLabel serverInfo = new JLabel(this.manager.getServerConector().toString());
-
+		JLabel serverEreichbar = new JLabel("");
+		serverEreichbar.setToolTipText("Erreichbarkeit des Servers!!");
+		if (this.manager.getServerConector().callServerData()) {
+			serverEreichbar.setText("JA");
+			serverEreichbar.setForeground(Color.GREEN);
+		} else {
+			serverEreichbar.setText("Nein");
+			serverEreichbar.setForeground(Color.RED);
+		}
+		changeServerZone.setLayout(new BoxLayout(changeServerZone, BoxLayout.Y_AXIS));
+		JLabel serverData = new JLabel(this.manager.getServerConector().getAbteilungsName() + " ; "
+				+ this.manager.getServerConector().getAbtID());
+		serverData.setToolTipText("[Abteilungs-Name] ; [Abteilungs-ID]");
+		JLabel serverAdress = new JLabel(this.manager.getServerConector().getServerIP().getHostAddress() + " ; "
+				+ this.manager.getServerConector().getServerPort());
+		serverAdress.setToolTipText("[IP - Adresse] ; [Port]");
 		JButton changeServerButton = new JButton("Change Server");
 		changeServerButton.setToolTipText("Change the Server that will be connected");
-		changeServerButton.addMouseListener(new ChangeServerButtonEvent(this.manager, serverInfo));
+		changeServerButton.addMouseListener(new ChangeServerButtonEvent(this.manager, this));
 
-		changeServerZone.add(serverInfo, BorderLayout.NORTH);
-		changeServerZone.add(changeServerButton, BorderLayout.SOUTH);
+		changeServerZone.add(serverEreichbar);
+		changeServerZone.add(serverData);
+		changeServerZone.add(serverAdress);
+		changeServerZone.add(changeServerButton);
 		return changeServerZone;
+	}
+
+	protected void recreateserverChangePanel() {
+		this.remove(this.serverChangePanel);
+		this.serverChangePanel = this.createServerChangePanel();
+		this.add(this.serverChangePanel);
+		this.revalidate();
 	}
 
 	private class LoginButtonEvent extends MouseAdapter {
@@ -131,11 +155,9 @@ public class Login extends JFrame {
 
 					// TODO Start to Build Main interface
 
-					
 					MainFrame mainFrame = new MainFrame(this.manager);
 					mainFrame.setVisible(true);
 					this.manager.setMainFrame(mainFrame);
-					
 
 				}
 			} else {
@@ -149,15 +171,15 @@ public class Login extends JFrame {
 
 	private class ChangeServerButtonEvent extends MouseAdapter {
 		ClientManager manager;
-		JLabel serverInfo;
+		Login login;
 
-		public ChangeServerButtonEvent(ClientManager manager, JLabel serverInfo2) {
+		public ChangeServerButtonEvent(ClientManager manager, Login login) {
 			this.manager = manager;
-			this.serverInfo = serverInfo2;
+			this.login = login;
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			ChangeServer changeServer = new ChangeServer(this.manager, this.serverInfo);
+			ChangeServer changeServer = new ChangeServer(this.manager, login);
 			changeServer.setVisible(true);
 		}
 	}

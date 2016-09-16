@@ -18,7 +18,7 @@ import update.UpdaterThread;
  * 
  * @author davidbaldauf Speichert Wichtige Daten für den Client.
  */
-public class ClientManager {
+public class ClientManager implements Manager {
 
 	/**
 	 * Datei Pfad

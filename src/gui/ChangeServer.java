@@ -25,11 +25,11 @@ public class ChangeServer extends JFrame {
 	private ClientManager manager;
 	private JTextField ip;
 	private JTextField port;
-	private JLabel serverInfo;
+	private Login login;
 
-	public ChangeServer(ClientManager manager, JLabel serverInfo) {
+	public ChangeServer(ClientManager manager, Login login) {
 		this.manager = manager;
-		this.serverInfo = serverInfo;
+		this.login = login;
 		this.setTitle("Server Change");
 		this.create();
 	}
@@ -76,7 +76,7 @@ public class ChangeServer extends JFrame {
 
 				changeServer.setVisible(false);
 
-				changeServer.serverInfo.setText(manager.getServerConector().toString());
+				changeServer.login.recreateserverChangePanel();
 
 			} catch (UnknownHostException ex) {
 				JOptionPane.showMessageDialog(changeServer.getContentPane(), "Der Server ist nicht ereichbar!",

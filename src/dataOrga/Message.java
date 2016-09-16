@@ -20,26 +20,39 @@ public class Message {
 		this.id = id;
 	}
 
+	private String text;
+
 	public String getText() {
 		return text;
 	}
+
+	private String username;
 
 	public String getUsername() {
 		return username;
 	}
 
+	private String abteilung;
+
 	public String getAbteilung() {
 		return abteilung;
 	}
+
+	private long lastchange;
 
 	public long getLastchange() {
 		return lastchange;
 	}
 
-	String text;
-	String username;
-	String abteilung;
-	long lastchange;
+	private boolean push;
+
+	public boolean getPush() {
+		return push;
+	}
+
+	public void setPush(boolean push) {
+		this.push = push;
+	}
 
 	public Message(int id, String text, String username, String abteilung, long lastchange) {
 		this.id = id;
@@ -51,12 +64,26 @@ public class Message {
 		} else {
 			this.lastchange = lastchange;
 		}
+		this.push = false;
+	}
+
+	public Message(int id, String text, String username, String abteilung, long lastchange, boolean push) {
+		this.id = id;
+		this.text = text;
+		this.username = username;
+		this.abteilung = abteilung;
+		if (lastchange == 0) {
+			this.lastchange = this.createTimeStamp();
+		} else {
+			this.lastchange = lastchange;
+		}
+		this.push = push;
 	}
 
 	public String toString() {
 
 		String tmp = this.id + split + this.text + split + this.username + split + this.abteilung + split
-				+ this.lastchange;
+				+ this.lastchange + split + this.push;
 		tmp.replaceAll("\n", enter);
 		// System.err.println(tmp);
 		return tmp;
@@ -69,7 +96,8 @@ public class Message {
 
 		String[] tmp = msg.split(split);
 
-		return new Message(Integer.valueOf(tmp[0]), tmp[1], tmp[2], tmp[3], Long.valueOf(tmp[4]));
+		return new Message(Integer.valueOf(tmp[0]), tmp[1], tmp[2], tmp[3], Long.valueOf(tmp[4]),
+				Boolean.valueOf(tmp[5]));
 	}
 
 	public void changeText(String text) {

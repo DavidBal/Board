@@ -3,7 +3,7 @@ package dataOrga;
 public enum ControllCalls {
 
 	END("End"), Ping("Ping"), Fail("Fail"), LOGIN("Login"), NEWMESSAGE("NewMessage"), UPDATE("Update"), ADDUSER(
-			"AddUser"), DELETEMSG("DeleteMsg"), EDITMESSAGE("EditMessage");
+			"AddUser"), DELETEMSG("DeleteMsg"), EDITMESSAGE("EditMessage"), SERVER("Server");
 
 	private ControllCalls(String call) {
 		this.call = call;
