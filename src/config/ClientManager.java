@@ -11,12 +11,16 @@ import java.util.ArrayList;
 import dataOrga.Message;
 import dataOrga.User;
 import gui.MainFrame;
+import messageSaving.MessageList;
 import update.ServerConector;
 import update.UpdaterThread;
 
+/*
+ * TODO Manager interface create
+ */
 /**
  * 
- * @author davidbaldauf Speichert Wichtige Daten für den Client.
+ * Speichert Wichtige Daten fuer den Client.
  */
 public class ClientManager implements Manager {
 
@@ -68,27 +72,15 @@ public class ClientManager implements Manager {
 		this.mainFrame = mf;
 	}
 
-	private MessageList messages;
+	private MessageList messageList;
 
 	public ArrayList<Message> getMessages() {
-		return this.messages.getMessages();
+		return this.messageList.getAllMessages();
 	}
 
-	public void addMessage(Message msg) {
-		Message oldMsg = this.messages.findMessage(msg);
-		if (oldMsg == null) {
-			this.messages.addMessage(msg);
-		} else {
-			oldMsg.changeText(msg.getText());
-		}
-	}
+	
 
-	public void deleteAllMessage() {
-		this.messages.deleteAllMessage();
-		if (this.mainFrame != null) {
-			mainFrame.removeAllMessagePanel();
-		}
-	}
+	
 
 	/**
 	 * Legt einen neue Manager fuer den Client an
@@ -96,7 +88,7 @@ public class ClientManager implements Manager {
 	public ClientManager() {
 		this.readInServer();
 
-		this.messages = new MessageList();
+		this.messageList = new MessageList();
 		this.mainFrame = null;
 	}
 
@@ -201,7 +193,7 @@ public class ClientManager implements Manager {
 	 * Startet den UpdaterThread
 	 */
 	public void startUpdater() {
-		this.update = new UpdaterThread(this);
+		this.update = new UpdaterThread(this.server,this.messageList ,this.mainFrame);
 		this.update.start();
 	}
 }

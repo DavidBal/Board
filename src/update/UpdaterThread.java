@@ -4,10 +4,11 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import config.ClientManager;
 import dataOrga.ControllCalls;
 import dataOrga.Message;
 import dataOrga.Pair;
+import gui.MainFrame;
+import messageSaving.MessageSaver;
 
 public class UpdaterThread extends Thread {
 
@@ -24,7 +25,9 @@ public class UpdaterThread extends Thread {
 		return buffer;
 	}
 
-	ClientManager manager;
+	private ServerConector serverConector;
+	private MainFrame mainFrame;
+	private MessageSaver messageSaver;
 
 	/**
 	 * 
@@ -35,15 +38,38 @@ public class UpdaterThread extends Thread {
 	}
 
 	/**
+	 * Client
 	 * 
-	 * @param manager
+	 * @param serverConector
+	 * @param messageSaver
+	 * @param mainFrame
 	 */
-	public UpdaterThread(ClientManager manager) {
-		this.manager = manager;
+	public UpdaterThread(ServerConector serverConector, MessageSaver messageSaver, MainFrame mainFrame) {
 		this.setName("UpdaterThread");
 		this.exit = false;
 		this.buffer = new SendeBuffer(this);
+		this.serverConector = serverConector;
+		this.messageSaver = messageSaver;
 
+		// Client Spezifisch
+		this.mainFrame = mainFrame;
+	}
+
+	/**
+	 * Server
+	 * 
+	 * @param serverConector
+	 * @param messageSaver
+	 */
+	public UpdaterThread(ServerConector serverConector, MessageSaver messageSaver) {
+		this.setName("UpdaterThread");
+		this.exit = false;
+		this.buffer = new SendeBuffer(this);
+		this.serverConector = serverConector;
+		this.messageSaver = messageSaver;
+
+		// Client Spezifisch
+		this.mainFrame = null;
 	}
 
 	/**
@@ -55,13 +81,13 @@ public class UpdaterThread extends Thread {
 			try {
 				this.sendBuffer();
 
-				this.manager.getServerConector().update(this.manager);
+				this.serverConector.update(this.messageSaver);
 
 				this.updateUI();
 			} catch (IOException e1) {
 				System.out.println("Übertragung nicht möglich");
-				if (manager.getMainFrame() != null) {
-					JOptionPane.showMessageDialog(manager.getMainFrame().getContentPane(),
+				if (mainFrame != null) {
+					JOptionPane.showMessageDialog(this.mainFrame.getContentPane(),
 							"Update nicht möglich: Server nicht ereichbar", "Update Failed", JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -72,20 +98,25 @@ public class UpdaterThread extends Thread {
 		}
 	}
 
+	/**
+	 * Sendet alle im Buffer gespeicherten Nachrichten
+	 * 
+	 * @throws IOException
+	 */
 	private synchronized void sendBuffer() throws IOException {
 		while (buffer.getMessage() != null) {
 			Pair<Message, ControllCalls> tmp = buffer.getMessage();
 			switch (tmp.getValue()) {
 			case NEWMESSAGE:
-				this.manager.getServerConector().sendNewMessage(tmp.getKey());
+				this.serverConector.sendNewMessage(tmp.getKey());
 				break;
 			case EDITMESSAGE:
 				// TODO
-				this.manager.getServerConector().deleteMessage(tmp.getKey());
-				this.manager.getServerConector().sendNewMessage(tmp.getKey());
+				this.serverConector.deleteMessage(tmp.getKey());
+				this.serverConector.sendNewMessage(tmp.getKey());
 				break;
 			case DELETEMSG:
-				this.manager.getServerConector().deleteMessage(tmp.getKey());
+				this.serverConector.deleteMessage(tmp.getKey());
 				break;
 			default:
 				break;
@@ -95,10 +126,10 @@ public class UpdaterThread extends Thread {
 	}
 
 	private synchronized void updateUI() {
-		if (this.manager.getMainFrame() != null) {
-			this.manager.getMainFrame().removeAllMessagePanel();
-			for (Message msg : this.manager.getMessages()) {
-				this.manager.getMainFrame().addMessage(msg);
+		if (this.mainFrame != null) {
+			mainFrame.removeAllMessagePanel();
+			for (Message msg : messageSaver.getAllMessages()) {
+				this.mainFrame.addMessageFrame(msg);
 			}
 		}
 	}

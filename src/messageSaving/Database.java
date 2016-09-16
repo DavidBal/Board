@@ -1,4 +1,4 @@
-package sqlbase;
+package messageSaving;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,10 +14,10 @@ import dataOrga.Message;
 import dataOrga.User;
 
 //TODO PUSH 
-//TODO ID jeder Abteilung brauch eigene.
-//TODO Jede Abteilung eigene DatenBank
+// ID jeder Abteilung brauch eigene. DONE
+// Jede Abteilung eigene DatenBank sollte gehen DONE
 
-public class Database {
+public class Database implements MessageSaver {
 	private Connection conn = null;
 
 	private String abteilungsName;
@@ -77,6 +77,7 @@ public class Database {
 
 	/**
 	 * 
+	 * 
 	 * @param username
 	 *            Legt einen Benutzer an falls dieser noch nicht vorhanden ist.
 	 * @param pw
@@ -88,8 +89,6 @@ public class Database {
 	public boolean addUser(User user) {
 		boolean free = true;
 		try {
-			// TODO Funktion Auto-Generate ID
-			// TODO Check Username Used only ones (WIP)
 
 			Statement stmt = conn.createStatement();
 
@@ -220,7 +219,7 @@ public class Database {
 	 * @param msg
 	 * @return
 	 */
-	public int addMessage(Message msg) {
+	public void addMessage(Message msg) {
 
 		Statement stmt;
 		try {
@@ -244,7 +243,7 @@ public class Database {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return 0;
+
 	}
 
 	/**
@@ -282,7 +281,7 @@ public class Database {
 	}
 
 	/**
-	 * Ladet alle Nachrichten von einem Bestimmen TimeStamp aus
+	 * Laedt alle Nachrichten von einem Bestimmen TimeStamp aus
 	 * 
 	 * @param time
 	 * @return
@@ -296,7 +295,27 @@ public class Database {
 			ResultSet rs = output.executeQuery();
 			while (rs.next()) {
 				msgs.add(new Message(Integer.valueOf(rs.getString("ID")), rs.getString("NACHRICHT"),
-						rs.getString("USERNAME"), rs.getString("ABTEILUNG"), Long.valueOf(rs.getString("LASTCHANGE"))));
+						rs.getString("USERNAME"), rs.getString("ABTEILUNG"), Long.valueOf(rs.getString("LASTCHANGE")),
+						Boolean.valueOf(rs.getString("PUSH"))));
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return msgs;
+	}
+
+	public ArrayList<Message> getAllMessages() {
+		ArrayList<Message> msgs = new ArrayList<Message>();
+
+		try {
+			String query = "Select * from NACHRICHT;";
+			PreparedStatement output = conn.prepareStatement(query);
+			ResultSet rs = output.executeQuery();
+			while (rs.next()) {
+				msgs.add(new Message(Integer.valueOf(rs.getString("ID")), rs.getString("NACHRICHT"),
+						rs.getString("USERNAME"), rs.getString("ABTEILUNG"), Long.valueOf(rs.getString("LASTCHANGE")),
+						Boolean.valueOf(rs.getString("PUSH"))));
 
 			}
 		} catch (SQLException e) {
@@ -327,13 +346,13 @@ public class Database {
 	}
 
 	/**
-	 * TODO Server eigene ID Sucht die größte frei ID
+	 * Datenbank sucht kleinste Freie ID
 	 * 
 	 * @param table
 	 * @return
 	 */
 	private Integer getID(String table) {
-		int id = 1; 
+		int id = 1;
 		int tmp = 0;
 		String query = "SELECT ID from " + table + " ORDER BY ID";
 		try {
@@ -354,6 +373,24 @@ public class Database {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	/**
+	 * This function does nothing at the momentn
+	 */
+	public void deleteAllMessage(String info) {
+		try {
+			String del = "delete from NACHRICHT where ABTEILUNG != '" + this.abteilungsName + "';";
+			PreparedStatement delete;
+			delete = conn.prepareStatement(del);
+			delete.execute();
+			delete.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

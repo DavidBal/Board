@@ -12,7 +12,11 @@ import config.ClientManager;
 import gui.GuiStarterLogin;
 import update.ServerConector;
 
-//TODO Client lagert alle Verbindungen auf externen Thread aus
+/*
+ * TODO Client lagert alle Verbindungen auf externen Thread aus DONE
+ * 
+ *
+ */
 
 public class ClientMain extends Thread {
 
@@ -42,9 +46,7 @@ public class ClientMain extends Thread {
 			manager.startUpdater();// TODO Move to over position
 
 			EventQueue.invokeLater(new GuiStarterLogin(manager));
-			// Ruft das Test Menue auf !!Konsole!!
-			// Konsole c = new Konsole(manager);
-			// c.hauptMenue();
+
 			synchronized (this) {
 				try {
 					this.wait();
@@ -55,13 +57,13 @@ public class ClientMain extends Thread {
 			}
 			manager.getUpdaterThread().exitUpdater(); // TODO Nicht schliesen
 														// wenn MainFrame noch
-														// offen ist.
+														// offen ist. momentan
+														// unsauber umgesezt.
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 	}
-
 
 }

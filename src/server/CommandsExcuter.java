@@ -7,6 +7,9 @@ import java.util.Scanner;
 import config.ServerManager;
 import dataOrga.User;
 
+//TODO Close server save with all workerthreads done
+//TODO Delete User, edit there "Berechtigung"
+//TODO Delete Msg
 public class CommandsExcuter extends Thread {
 
 	Scanner scanner = new Scanner(System.in);
@@ -28,7 +31,9 @@ public class CommandsExcuter extends Thread {
 	private EnumSet<Commands> usable;
 
 	private enum Commands {
-		help("Shows All Commnads"), show("Show a List of Connections"), fail("fail passing"), add("add a user"), listuser("Shows a list of all Users");
+		help("Shows All Commnads"), show("Show a List of Connections"), fail("fail passing"), add(
+				"add a user"), listuser(
+						"Shows a list of all Users"), deleteOverMsg("Delete all Messages from over Departments");
 
 		String info;
 
@@ -49,7 +54,7 @@ public class CommandsExcuter extends Thread {
 		this.manager = manager;
 		this.server = server;
 		this.reader = new Scanner(System.in);
-		usable = EnumSet.of(Commands.help, Commands.show,Commands.add,Commands.listuser);
+		usable = EnumSet.of(Commands.help, Commands.show, Commands.add, Commands.listuser, Commands.deleteOverMsg);
 		this.setName("ServerCommandExecuter");
 	}
 
@@ -101,6 +106,10 @@ public class CommandsExcuter extends Thread {
 			for(User u : users){
 				println(u.toString());
 			}
+			break;
+		case deleteOverMsg:
+			manager.database.deleteAllMessage("");
+			println("All Messages from other Deapartments have been deleted");
 			break;
 		default:
 			println("Use Command: " + Commands.help + " - " + Commands.help.info);
