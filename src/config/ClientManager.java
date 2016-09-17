@@ -70,6 +70,7 @@ public class ClientManager implements Manager {
 
 	public void setMainFrame(MainFrame mf) {
 		this.mainFrame = mf;
+		this.update.setMainFrame(mf);
 	}
 
 	private MessageList messageList;

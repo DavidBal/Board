@@ -8,12 +8,11 @@ import dataOrga.Pair;
 
 /**
  * 
- *Klasse um Nachtichten zwischen zu speichern.
+ * Klasse um Nachtichten zwischen zu speichern.
  * 
  */
 public class SendeBuffer {
-	
-	
+
 	HashMap<Message, ControllCalls> queue;
 
 	UpdaterThread updater;
@@ -23,7 +22,6 @@ public class SendeBuffer {
 		this.queue = new HashMap<Message, ControllCalls>();
 	}
 
-	
 	public void addNewMessage(Message msg) {
 		synchronized (queue) {
 			queue.put(msg, ControllCalls.NEWMESSAGE);
@@ -45,8 +43,16 @@ public class SendeBuffer {
 		updater.forceUpdate();
 	}
 
+	public void addPushMessage(Message msg) {
+		synchronized (queue) {
+			queue.put(msg, ControllCalls.PUSH);
+		}
+		updater.forceUpdate();
+	}
+
 	/**
 	 * Gibt eine Nachricht aus dem Buffer zurück
+	 * 
 	 * @return Null oder Data
 	 */
 	public Pair<Message, ControllCalls> getMessage() {
@@ -65,6 +71,7 @@ public class SendeBuffer {
 
 	/**
 	 * Entfernt Übergebene Nachricht aus dem Buffer
+	 * 
 	 * @param msg
 	 */
 	public void removeMessageFromBuffer(Message msg) {

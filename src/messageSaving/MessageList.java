@@ -85,4 +85,17 @@ public class MessageList implements MessageSaver {
 		}
 	}
 
+	@Override
+	public ArrayList<Message> getAllPushMessage() {
+		ArrayList<Message> list = new ArrayList<Message>();
+
+		for (Message msg : this.messageList) {
+			if (msg.getPush() == true) {
+				list.add(msg);
+			}
+		}
+
+		return list;
+	}
+
 }

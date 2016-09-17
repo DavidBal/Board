@@ -275,9 +275,16 @@ public class Database implements MessageSaver {
 		return loeschen_erfolgreich;
 	}
 
-	public void editMessage(Message newMsg, Message oldMsg) {
-		this.deleteMessage(oldMsg);
-		this.addMessage(newMsg);
+	public void editMessage(Message newMsg) {
+		try {
+			Statement stmt = conn.createStatement();
+			String edit = "UPDATE NACHRICHT SET NACHRICHT='" + newMsg.getText() + "' , PUSH='" + newMsg.getPush()
+					+ "' WHERE ID =" + newMsg.getId() + ";";
+			stmt.executeUpdate(edit);
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -377,7 +384,7 @@ public class Database implements MessageSaver {
 
 	@Override
 	/**
-	 * This function does nothing at the momentn
+	 * @deprecated Delete All Messages from a diffrent deapartment
 	 */
 	public void deleteAllMessage() {
 		try {
@@ -390,7 +397,42 @@ public class Database implements MessageSaver {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
 
+	public void deleteAllMessageFromDeapartment(String abtName) {
+		try {
+			String del = "delete from NACHRICHT where ABTEILUNG = '" + abtName + "';";
+			PreparedStatement delete;
+			delete = conn.prepareStatement(del);
+			delete.execute();
+			delete.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public ArrayList<Message> getAllPushMessage() {
+		ArrayList<Message> list = new ArrayList<Message>();
+
+		try {
+			String query = "Select * from NACHRICHT;";
+			PreparedStatement output = conn.prepareStatement(query);
+			ResultSet rs = output.executeQuery();
+			while (rs.next()) {
+				if (rs.getString("Push").equals("true")) {
+					list.add(new Message(Integer.valueOf(rs.getString("ID")), rs.getString("NACHRICHT"),
+							rs.getString("USERNAME"), rs.getString("ABTEILUNG"),
+							Long.valueOf(rs.getString("LASTCHANGE")), Boolean.valueOf(rs.getString("PUSH"))));
+
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return list;
 	}
 
 }

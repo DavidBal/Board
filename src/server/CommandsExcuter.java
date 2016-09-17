@@ -36,7 +36,8 @@ public class CommandsExcuter extends Thread {
 		help("Shows All Commnads"), show("Show a List of Connections"), fail("fail passing"), add(
 				"add a user"), listuser("Shows a list of all Users"), deleteOverMsg(
 						"Delete all Messages from over Departments"), setTopServer(
-								"Set a Server to that this server send Messages");
+								"Set a Server to that this server send Messages"), forceUpdate(
+										"The Server will be forced to do an Update!");
 
 		String info;
 
@@ -130,6 +131,15 @@ public class CommandsExcuter extends Thread {
 				e.printStackTrace();
 			}
 			break;
+		case forceUpdate:
+			if (this.manager.getUpdater() != null) {
+				println("Update will be forced:");
+
+				manager.getUpdater().forceUpdate();
+
+			} else {
+				println("No Updater is intialed.");
+			}
 		default:
 			println("Use Command: " + Commands.help + " - " + Commands.help.info);
 			break;

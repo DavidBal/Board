@@ -8,6 +8,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import dataOrga.ControllCalls;
 import dataOrga.Message;
@@ -18,26 +19,33 @@ import messageSaving.MessageSaver;
 public class ServerConector {
 
 	private String abteilungsName;
-	private int abtID;
-	private int serverPort;
-	private InetAddress serverIP;
 
-	private Socket socket;
-
-	private BufferedReader in;
-	private PrintWriter out;
-
-	public String getName() {
+	public String getAbteilungsName() {
 		return abteilungsName;
 	}
+
+	private int abtID;
+
+	public int getAbtID() {
+		return abtID;
+	}
+
+	private int serverPort;
 
 	public int getServerPort() {
 		return serverPort;
 	}
 
+	private InetAddress serverIP;
+
 	public InetAddress getServerIP() {
 		return serverIP;
 	}
+
+	private Socket socket;
+
+	private BufferedReader in;
+	private PrintWriter out;
 
 	/**
 	 * 
@@ -159,23 +167,25 @@ public class ServerConector {
 	 */
 	protected void update(MessageSaver messageSaver) throws IOException {
 		this.connect();
+		synchronized (messageSaver) {
 
-		int marker = 1000000;
+			int marker = 1000000;
 
-		this.out.println(dataOrga.ControllCalls.UPDATE);
+			this.out.println(dataOrga.ControllCalls.UPDATE);
 
-		messageSaver.deleteAllMessage(); // TODO Besser
+			messageSaver.deleteAllMessage(); // TODO Besser
 
-		String input;
+			String input;
 
-		in.mark(marker);
-		input = in.readLine();
-
-		while (!input.equals(dataOrga.ControllCalls.END.toString())) {
-			in.reset();
-			messageSaver.addMessage(Message.stringToMessage(Message.getMessage(in)));
 			in.mark(marker);
 			input = in.readLine();
+
+			while (!input.equals(dataOrga.ControllCalls.END.toString())) {
+				in.reset();
+				messageSaver.addMessage(Message.stringToMessage(Message.getMessage(in)));
+				in.mark(marker);
+				input = in.readLine();
+			}
 		}
 
 		this.disconnect();
@@ -225,27 +235,6 @@ public class ServerConector {
 		return anlegen_erfolgreich;
 	}
 
-	@Override
-	public String toString() {
-		String tmp = this.abteilungsName + ":" + this.serverIP.getHostName() + ":" + this.serverPort;
-		return tmp;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof ServerConector) {
-			ServerConector other = (ServerConector) o;
-			if (this.abteilungsName.equals(other.abteilungsName)) {
-				if (this.serverIP.equals(other.serverIP)) {
-					if (this.serverPort == other.serverPort) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * 
 	 * @throws IOException
@@ -268,12 +257,62 @@ public class ServerConector {
 		return true;
 	}
 
-	public String getAbteilungsName() {
-		return abteilungsName;
+	public boolean pushMessage(Message msg) throws IOException {
+		boolean push = true;
+
+		this.connect();
+
+		this.out.println(ControllCalls.PUSH.toString());
+
+		msg.sendMessage(out);
+
+		this.disconnect();
+
+		return push;
 	}
 
-	public int getAbtID() {
-		return abtID;
+	public void editMessage(Message msg) throws IOException {
+		this.connect();
+
+		this.out.println(ControllCalls.EDITMESSAGE.toString());
+
+		msg.sendMessage(out);
+
+		this.disconnect();
+	}
+
+	public void pushServerAllMessages(ArrayList<Message> msgs) throws IOException {
+		this.connect();
+
+		this.out.println(ControllCalls.SERVERPUSH.toString());
+
+		this.out.println(this.abteilungsName);
+		for (Message msg : msgs) {
+			msg.sendMessage(out);
+		}
+
+		this.out.println(ControllCalls.END);
+	}
+
+	@Override
+	public String toString() {
+		String tmp = this.abteilungsName + ":" + this.serverIP.getHostName() + ":" + this.serverPort;
+		return tmp;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ServerConector) {
+			ServerConector other = (ServerConector) o;
+			if (this.abteilungsName.equals(other.abteilungsName)) {
+				if (this.serverIP.equals(other.serverIP)) {
+					if (this.serverPort == other.serverPort) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }

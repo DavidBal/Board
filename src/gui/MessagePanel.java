@@ -59,6 +59,7 @@ public class MessagePanel extends JPanel {
 		JButton delete = new JButton("Delete");
 		delete.addMouseListener(new DeleteMessage(this.manager.getUpdaterThread().getBuffer(), this.message));
 		JButton push = new JButton("Push");
+		push.addMouseListener(new PushMessageEvent(this.manager.getUpdaterThread().getBuffer(), message));
 		push.setEnabled(false);
 
 		// Disabel Buttons für unberächtigte
@@ -138,6 +139,30 @@ public class MessagePanel extends JPanel {
 			if (dialogResult == JOptionPane.YES_OPTION) {
 				MessageNewAndEditFrame editor = new MessageNewAndEditFrame(buffer, user, message);
 				editor.setVisible(true);
+			}
+		}
+
+	}
+
+	private class PushMessageEvent extends MouseAdapter {
+
+		SendeBuffer buffer;
+		Message message;
+
+		public PushMessageEvent(SendeBuffer buffer, Message message) {
+			this.buffer = buffer;
+			this.message = message;
+
+		}
+
+		public void mouseClicked(MouseEvent e) {
+			int dialogButton = JOptionPane.YES_NO_OPTION;
+			int dialogResult = JOptionPane.showConfirmDialog(null,
+					"Wollen sie die Nachricht wircklich an TopLevel Server weiterleiten?", "Abfrage", dialogButton);
+
+			if (dialogResult == JOptionPane.YES_OPTION) {
+				message.setPush(true);
+				this.buffer.addPushMessage(message);
 			}
 		}
 

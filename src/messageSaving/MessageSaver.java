@@ -13,5 +13,7 @@ public interface MessageSaver {
 	public void deleteAllMessage();
 	
 	public ArrayList<Message> getAllMessages();
+	
+	public ArrayList<Message> getAllPushMessage();
 
 }

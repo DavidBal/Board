@@ -27,6 +27,11 @@ public class UpdaterThread extends Thread {
 
 	private ServerConector serverConector;
 	private MainFrame mainFrame;
+
+	public void setMainFrame(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+
 	private MessageSaver messageSaver;
 
 	/**
@@ -44,12 +49,12 @@ public class UpdaterThread extends Thread {
 	 * @param messageSaver
 	 */
 	public UpdaterThread(ServerConector serverConector, MessageSaver messageSaver) {
-		this.setName("UpdaterThread");
+		this.setName("UpdaterThread-Server");
 		this.exit = false;
 		this.buffer = new SendeBuffer(this);
 		this.serverConector = serverConector;
 		this.messageSaver = messageSaver;
-	
+
 		// Client Spezifisch
 		this.mainFrame = null;
 	}
@@ -63,7 +68,7 @@ public class UpdaterThread extends Thread {
 	 */
 	public UpdaterThread(ServerConector serverConector, MessageSaver messageSaver, MainFrame mainFrame) {
 		this(serverConector, messageSaver);
-
+		this.setName("UpdaterThread-Client");
 		// Client Spezifisch
 		this.mainFrame = mainFrame;
 	}
@@ -78,6 +83,8 @@ public class UpdaterThread extends Thread {
 				this.sendBuffer();
 
 				this.serverConector.update(this.messageSaver);
+
+				this.sendAllPushMessage();
 
 				this.updateUI();
 			} catch (IOException e1) {
@@ -107,12 +114,13 @@ public class UpdaterThread extends Thread {
 				this.serverConector.sendNewMessage(tmp.getKey());
 				break;
 			case EDITMESSAGE:
-				// TODO
-				this.serverConector.deleteMessage(tmp.getKey());
-				this.serverConector.sendNewMessage(tmp.getKey());
+				this.serverConector.editMessage(tmp.getKey());
 				break;
 			case DELETEMSG:
 				this.serverConector.deleteMessage(tmp.getKey());
+				break;
+			case PUSH:
+				this.serverConector.pushMessage(tmp.getKey());
 				break;
 			default:
 				break;
@@ -121,11 +129,20 @@ public class UpdaterThread extends Thread {
 		}
 	}
 
+	private void sendAllPushMessage() throws IOException {
+		if (this.getName().equals("UpdaterThread-Server")) {
+			System.out.println("Server sendet Daten Top Level Server");
+			this.serverConector.pushServerAllMessages(this.messageSaver.getAllPushMessage());
+		}
+	}
+
 	private synchronized void updateUI() {
 		if (this.mainFrame != null) {
-			mainFrame.removeAllMessagePanel();
-			for (Message msg : messageSaver.getAllMessages()) {
-				this.mainFrame.addMessageFrame(msg);
+			synchronized (messageSaver) {
+				mainFrame.removeAllMessagePanel();
+				for (Message msg : messageSaver.getAllMessages()) {
+					this.mainFrame.addMessageFrame(msg);
+				}
 			}
 		}
 	}

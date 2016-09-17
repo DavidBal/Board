@@ -31,14 +31,14 @@ public class WorkerThread extends Thread {
 		this.client = client;
 		this.id = id;
 		this.manager = manager;
-	
+
 		this.setName("WorkerThread" + this.id);
-	
+
 		try {
 			this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			this.out = new PrintWriter(client.getOutputStream(), true);
 		} catch (IOException e) {
-			e.printStackTrace(); //TODO
+			e.printStackTrace(); // TODO
 		}
 	}
 
@@ -60,7 +60,7 @@ public class WorkerThread extends Thread {
 			client.close();
 
 		} catch (IOException e) {
-			e.printStackTrace(); //TODO
+			e.printStackTrace(); // TODO
 		}
 
 		manager.onFinish();
@@ -139,11 +139,55 @@ public class WorkerThread extends Thread {
 				e.printStackTrace();
 			}
 		case SERVER:
-			
+
 			this.out.println(this.manager.getAbteilungsName());
 			this.out.println(this.manager.getAbteilungsID());
-			
+
 			break;
+
+		case PUSH:
+			try {
+
+				Message msg = Message.stringToMessage(Message.getMessage(in));
+
+				this.manager.getDatabase().editMessage(msg);
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case EDITMESSAGE:
+			try {
+				Message msg = Message.stringToMessage(Message.getMessage(in));
+
+				this.manager.getDatabase().editMessage(msg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			break;
+		case SERVERPUSH:
+			try {
+				String abtName = this.in.readLine();
+				this.manager.getDatabase().deleteAllMessageFromDeapartment(abtName);
+
+				int marker = 1000000;
+				String input;
+
+				in.mark(marker);
+				input = in.readLine();
+
+				while (!input.equals(dataOrga.ControllCalls.END.toString())) {
+					in.reset();
+					this.manager.getDatabase().addMessage(Message.stringToMessage(Message.getMessage(in)));
+					in.mark(marker);
+					input = in.readLine();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		default:
 			break;
