@@ -32,7 +32,7 @@ public class WorkerThread extends Thread {
 		this.id = id;
 		this.manager = manager;
 
-		this.setName("WorkerThread" + this.id);
+		this.setName("WorkerThread " + this.id + " ");
 
 		try {
 			this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -55,6 +55,7 @@ public class WorkerThread extends Thread {
 			if (ServerManager.debug)
 				System.out.println(controllCall);
 
+			this.setName("WorkerThread " + this.id + " " + controllCall);
 			this.controll(controllCall);
 
 			client.close();

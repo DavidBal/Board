@@ -10,7 +10,8 @@ public class StartUp {
 	public static boolean threadactiv = false;
 
 	public static void main(String[] args) {
-
+		
+		
 		try {
 			if (args.length == 0) {
 				System.out.println("Test?");
@@ -72,7 +73,7 @@ public class StartUp {
 		if (arg.length >= 3) {
 			// Abteilungs Name NEED
 			if (arg[1].equals("?")) {
-				System.out.println("Ändere Abteilungs-Name");
+				System.out.println("ï¿½ndere Abteilungs-Name");
 				return;
 			}
 			abtName = arg[1];

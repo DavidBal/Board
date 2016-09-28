@@ -139,7 +139,7 @@ public class ServerConector {
 	}
 
 	/**
-	 * Löscht eine Nachricht
+	 * Loescht eine Nachricht
 	 * 
 	 * @param msg
 	 * @return
@@ -192,7 +192,7 @@ public class ServerConector {
 	}
 
 	/**
-	 * Überträgt den Namen und das Passwort und bekommt die Berechtigung zurück;
+	 * Uebertraegt den Namen und das Passwort und bekommt die Berechtigung zurueck;
 	 * Berchtigung Null wenn der User nicht exestiert
 	 * 
 	 * @param user
@@ -212,7 +212,7 @@ public class ServerConector {
 	}
 
 	/**
-	 * Übrtägt die Daten einen Users der neu angelegt werden soll.
+	 * Uebertraegt die Daten einen Users der neu angelegt werden soll.
 	 * 
 	 * @param user
 	 * @return

@@ -43,8 +43,6 @@ public class ClientMain extends Thread {
 
 			System.out.println(manager.getServerConector().toString());
 
-			manager.startUpdater();// TODO Move to over position
-
 			EventQueue.invokeLater(new GuiStarterLogin(manager));
 
 			synchronized (this) {
