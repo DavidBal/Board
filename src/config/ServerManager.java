@@ -20,7 +20,7 @@ public class ServerManager implements Manager {
 		this.serverPort = serverPort;
 	}
 
-	public static final boolean debug = false;
+	public static final boolean debug = true;
 
 	private int acticConnects;
 	private int finishConnects;

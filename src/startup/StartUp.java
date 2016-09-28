@@ -13,6 +13,7 @@ public class StartUp {
 
 		try {
 			if (args.length == 0) {
+				System.out.println("Test?");
 				System.out.println(" -c  : Starting the Client");
 				System.out.println(" -s [Abteilungs-Name] [Abteilungs-ID 10-9999] [Port] : Starting the Server");
 			} else if (args.length > 0) {

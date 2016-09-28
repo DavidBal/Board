@@ -59,6 +59,8 @@ public class WorkerThread extends Thread {
 
 			client.close();
 
+			if (ServerManager.debug)
+				System.out.println("Ende");
 		} catch (IOException e) {
 			e.printStackTrace(); // TODO
 		}
@@ -69,75 +71,63 @@ public class WorkerThread extends Thread {
 			System.out.println("Worker - " + this.id + " END!!");
 	}
 
-	private void controll(String controllCall) {
+	private void controll(String controllCall) throws IOException {
+		Message msg;
+		String msgString;
+
 		switch (ControllCalls.stringToControllCall(controllCall)) {
 		case Ping:
 			this.out.println("Pong");
 			break;
 		case NEWMESSAGE:
-			try {
-				String msg = Message.getMessage(in);
 
-				this.manager.getDatabase().addMessage(Message.stringToMessage(msg));
-				this.in.readLine();
-				// TODO END ??
-			} catch (IOException e) {
-				// TODO
-				e.printStackTrace();
-			}
+			msgString = Message.getMessage(in);
+
+			this.manager.getDatabase().addMessage(Message.stringToMessage(msgString));
+			this.in.readLine();
+			// TODO END ??
 
 			break;
 		case LOGIN:
-			try {
-				// User Name
-				String userName = this.in.readLine();
-				// PW
-				String passwort = this.in.readLine();
 
-				//
-				this.out.println(this.manager.getDatabase().getUserBerechtigung(new User(userName, passwort, 0, 0)));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			// User Name
+			String userName = this.in.readLine();
+			// PW
+			String passwort = this.in.readLine();
+
+			//
+			this.out.println(this.manager.getDatabase().getUserBerechtigung(new User(userName, passwort, 0, 0)));
+
 			break;
 		case UPDATE:
 			ArrayList<Message> msgs = this.manager.getDatabase().loadMessages(0);
-			for (Message msg : msgs) {
-				msg.sendMessage(out);
+			for (Message msg1 : msgs) {
+				msg1.sendMessage(out);
 			}
 
 			this.out.println(ControllCalls.END);
 
 			break;
 		case ADDUSER:
-			try {
-				String name = in.readLine();
-				String pw = in.readLine();
-				String berechtigung = in.readLine();
-				User user = new User(name, pw, Integer.valueOf(berechtigung));
 
-				boolean anlegen_erfolgreich = manager.getDatabase().addUser(user);
+			String name = in.readLine();
+			String pw = in.readLine();
+			String berechtigung = in.readLine();
+			User user = new User(name, pw, Integer.valueOf(berechtigung));
 
-				this.out.println(anlegen_erfolgreich);
+			boolean anlegen_erfolgreich = manager.getDatabase().addUser(user);
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this.out.println(anlegen_erfolgreich);
+
 			break;
 
 		case DELETEMSG:
-			try {
 
-				Message msg = Message.stringToMessage(Message.getMessage(in));
-				boolean loeschen_erfolgreich = this.manager.getDatabase().deleteMessage(msg);
-				this.out.println(loeschen_erfolgreich);
+			msg = Message.stringToMessage(Message.getMessage(in));
+			boolean loeschen_erfolgreich = this.manager.getDatabase().deleteMessage(msg);
+			this.out.println(loeschen_erfolgreich);
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			break;
 		case SERVER:
 
 			this.out.println(this.manager.getAbteilungsName());
@@ -146,53 +136,44 @@ public class WorkerThread extends Thread {
 			break;
 
 		case PUSH:
-			try {
 
-				Message msg = Message.stringToMessage(Message.getMessage(in));
+			msg = Message.stringToMessage(Message.getMessage(in));
 
-				this.manager.getDatabase().editMessage(msg);
+			this.manager.getDatabase().editMessage(msg);
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			break;
 
 		case EDITMESSAGE:
-			try {
-				Message msg = Message.stringToMessage(Message.getMessage(in));
 
-				this.manager.getDatabase().editMessage(msg);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			msg = Message.stringToMessage(Message.getMessage(in));
+
+			this.manager.getDatabase().editMessage(msg);
+
 			break;
 		case SERVERPUSH:
-			try {
-				String abtName = this.in.readLine();
-				this.manager.getDatabase().deleteAllMessageFromDeapartment(abtName);
 
-				int marker = 1000000;
-				String input;
+			String abtName = this.in.readLine();
+			this.manager.getDatabase().deleteAllMessageFromDeapartment(abtName);
 
+			int marker = 1000000;
+			String input;
+
+			in.mark(marker);
+			input = in.readLine();
+
+			while (!input.equals(dataOrga.ControllCalls.END.toString())) {
+				in.reset();
+				msg = Message.stringToMessage(Message.getMessage(in));
+				msg.setPush(false);
+				this.manager.getDatabase().addMessage(msg);
 				in.mark(marker);
 				input = in.readLine();
-
-				while (!input.equals(dataOrga.ControllCalls.END.toString())) {
-					in.reset();
-					this.manager.getDatabase().addMessage(Message.stringToMessage(Message.getMessage(in)));
-					in.mark(marker);
-					input = in.readLine();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 
+			break;
 		default:
 			break;
 
 		}
 	}
-
 }

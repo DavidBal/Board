@@ -19,7 +19,7 @@ import update.UpdaterThread;
  * TODO Manager interface create
  */
 /**
- * 
+ *  
  * Speichert Wichtige Daten fuer den Client.
  */
 public class ClientManager implements Manager {
@@ -78,10 +78,6 @@ public class ClientManager implements Manager {
 	public ArrayList<Message> getMessages() {
 		return this.messageList.getAllMessages();
 	}
-
-	
-
-	
 
 	/**
 	 * Legt einen neue Manager fuer den Client an
@@ -187,14 +183,20 @@ public class ClientManager implements Manager {
 	 * @param server
 	 */
 	public void changeMainServer(ServerConector server) {
+		if (this.server != null) {
+			this.update.exitUpdater();
+		}
+		
 		this.server = server;
+		this.startUpdater();
+
 	}
 
 	/**
 	 * Startet den UpdaterThread
 	 */
 	public void startUpdater() {
-		this.update = new UpdaterThread(this.server,this.messageList ,this.mainFrame);
+		this.update = new UpdaterThread(this.server, this.messageList, this.mainFrame);
 		this.update.start();
 	}
 }
